@@ -95,20 +95,13 @@ def scrape_website(url: str, max_pages: int = 15, depth: int = 1) -> List[Dict]:
                 continue
             if "text/html" not in resp.headers.get("Content-Type", ""):
                 continue
-        except requests.exceptions.SSLError:
-            # Fallback for systems with broken SSL certs (e.g. macOS)
-            try:
-                resp = requests.get(current_url, headers=headers, timeout=10,
-                                    allow_redirects=True, verify=False)
-                if resp.status_code != 200:
-                    continue
-                if "text/html" not in resp.headers.get("Content-Type", ""):
-                    continue
-            except Exception as e:
-                print(f"  ⚠️  Failed: {current_url} ({e})")
-                continue
-        except Exception as e:
-            print(f"  ⚠️  Failed: {current_url} ({e})")
+        except requests.exceptions.SSLError as e:
+            # Do NOT silently bypass SSL verification — log and skip instead
+            print(f"  ⚠️  SSL error for {current_url}: certificate verification failed. Skipping. "
+                  f"(Hint: check if the site has a valid TLS certificate.)")
+            continue
+        except Exception:
+            print(f"  ⚠️  Failed to fetch {current_url}")
             continue
 
         soup = BeautifulSoup(resp.text, "html.parser")
