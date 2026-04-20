@@ -3,9 +3,16 @@ import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
 import { repoLinks } from "../lib/site";
 
 const heroCommands = [
-  "python prepare.py --import-docs ./docs",
-  "edit config.py",
+  "llm-kb sync && llm-kb compile",
+  "llm-kb agents \"enterprise onboarding ai build\"",
+  "llm-kb agent-start \"professionalize deployment\" --copy",
   "python evaluate.py --verbose",
+];
+
+const heroProof = [
+  "Customized AI integration for small to mid-sized companies.",
+  "Relevant llm-kb agents for delivery, hardening, and support.",
+  "Enterprise-grade posture for security, deployment, and governance.",
 ];
 
 export default function HeroSection() {
@@ -16,45 +23,66 @@ export default function HeroSection() {
   return (
     <section id="top" ref={sectionRef} className="section hero-section">
       <div className="section-inner hero-stack">
-        <div className="section-label reveal">Open-source prompt tuning workflow</div>
+        <div className="section-label reveal">
+          Customized AI integration for small to mid-sized companies
+        </div>
 
         <h1 className="hero-heading reveal">
-          Turn business docs into a
+          Build a
           {" "}
-          <span>measurable AI assistant.</span>
+          <span>professional AI delivery system.</span>
         </h1>
 
         <p className="hero-copy reveal">
-          OnboardAI gives you a clean loop for ingesting company knowledge,
-          tuning prompts and retrieval in
-          {" "}
-          <code>config.py</code>
-          {" "}
-          and scoring every iteration against real question-answer pairs
-          before you trust the output.
+          OnboardAI now presents a stronger, service-ready offering: use
+          company knowledge, llm-kb knowledge operations, and relevant
+          specialist agents to design, secure, deploy, and support AI systems
+          that feel credible for real businesses and professional buyers.
         </p>
 
         <div className="button-row reveal">
-          <a className="button button-primary" href="#workflow">
-            See the Workflow
+          <a className="button button-primary" href="#capabilities">
+            See Capabilities
           </a>
-          <a
-            className="button button-secondary"
-            href={repoLinks.repo}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Open the Repo
+          <a className="button button-secondary" href="#agents">
+            View Agent System
           </a>
+        </div>
+
+        <div className="hero-proof-grid reveal" aria-label="Core positioning">
+          {heroProof.map((item) => (
+            <div key={item} className="proof-pill">
+              {item}
+            </div>
+          ))}
         </div>
 
         <div className="hero-command-grid reveal" aria-label="Core commands">
           {heroCommands.map((command) => (
             <div key={command} className="command-pill">
-              <span className="command-pill-label">Run</span>
+              <span className="command-pill-label">Capability</span>
               <code>{command}</code>
             </div>
           ))}
+        </div>
+
+        <div className="button-row hero-links reveal">
+          <a
+            className="text-link"
+            href={repoLinks.repo}
+            target="_blank"
+            rel="noreferrer"
+          >
+            OnboardAI repository
+          </a>
+          <a
+            className="text-link"
+            href={repoLinks.readme}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Delivery workflow docs
+          </a>
         </div>
 
         <div className="scroll-indicator" aria-hidden="true" />

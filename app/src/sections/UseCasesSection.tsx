@@ -3,28 +3,28 @@ import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
 
 const useCases = [
   {
-    industry: "Coffee shops and retail",
-    knowledge: "Menus, hours, loyalty perks, refunds, seasonal items",
-    questions: "Pricing, store hours, complaints, delivery, gift cards",
-    outcome: "Great for the sample dataset and for fast feedback loops on customer support answers.",
+    industry: "Customer support modernization",
+    knowledge: "Help-center docs, refund policies, onboarding material, escalation rules",
+    questions: "What can the assistant answer, when should it escalate, and how should it sound?",
+    outcome: "A practical fit for small and mid-sized companies replacing fragmented support content with a governed AI layer.",
   },
   {
-    industry: "SaaS documentation",
-    knowledge: "Feature docs, pricing, exports, plan limits, integration notes",
-    questions: "Plan fit, onboarding blockers, CSV export, API access",
-    outcome: "Lets teams benchmark whether product answers are grounded in the latest docs.",
+    industry: "Internal knowledge copilots",
+    knowledge: "SOPs, playbooks, compliance notes, delivery checklists, team conventions",
+    questions: "How do we do this, what policy applies here, and what should happen next?",
+    outcome: "Useful when growing teams need faster onboarding and more consistent decisions without losing control.",
   },
   {
-    industry: "Internal operations",
-    knowledge: "SOPs, onboarding guides, HR policies, escalation paths",
-    questions: "Benefits, laptop requests, approval chains, incident steps",
-    outcome: "Useful when you want to test an internal assistant before exposing it to staff.",
+    industry: "Domain-specific AI integration",
+    knowledge: "Product specs, architecture notes, pricing logic, integration guidance, implementation constraints",
+    questions: "Can the assistant support sales, delivery, ops, and customer-facing use cases with the right boundaries?",
+    outcome: "Strong for organizations that need custom AI behavior tied to how the business actually runs.",
   },
   {
-    industry: "Professional services",
-    knowledge: "Fees, intake rules, timelines, deliverables, client policies",
-    questions: "What documents are needed, how long a process takes, what happens next",
-    outcome: "Helps domain experts tune careful, bounded answers instead of generic chatbot copy.",
+    industry: "Enterprise-ready rollout paths",
+    knowledge: "Security requirements, deployment standards, review criteria, support processes",
+    questions: "What does it take to move from prototype to a governed, supportable production system?",
+    outcome: "Gives companies a story that can satisfy both operators and more demanding enterprise buyers.",
   },
 ];
 
@@ -38,11 +38,12 @@ export default function UseCasesSection() {
       <div className="section-inner">
         <div className="section-label reveal">Use cases</div>
         <h2 className="section-heading reveal">
-          Built for domain-specific question answering.
+          Built for AI integrations that need to survive real operations.
         </h2>
         <p className="section-copy reveal">
-          OnboardAI works best when you have a bounded knowledge base and a set
-          of questions that matter enough to test before shipping.
+          The website now speaks to service buyers and delivery teams alike:
+          customer support, internal copilots, domain-specific assistants, and
+          professional rollout programs.
         </p>
 
         <div className="usecase-grid">

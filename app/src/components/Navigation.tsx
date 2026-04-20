@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { repoLinks } from "../lib/site";
 
 const navItems = [
+  { label: "Capabilities", href: "#capabilities" },
   { label: "Workflow", href: "#workflow" },
-  { label: "Engine", href: "#engine" },
+  { label: "Agents", href: "#agents" },
   { label: "Use Cases", href: "#use-cases" },
-  { label: "Scoring", href: "#scoring" },
+  { label: "Readiness", href: "#scoring" },
 ];
 
 export default function Navigation() {
@@ -50,9 +51,9 @@ export default function Navigation() {
           </a>
           <a
             className="button button-primary nav-primary"
-            href="#workflow"
+            href="#capabilities"
           >
-            Start Here
+            Explore Platform
           </a>
         </div>
       </div>

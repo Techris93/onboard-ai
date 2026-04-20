@@ -4,36 +4,37 @@ import { repoLinks } from "../lib/site";
 
 const scores = [
   {
-    value: "50",
-    label: "Accuracy",
-    body: "Checks whether key facts from the expected answer actually appear in the model output.",
+    value: "KB",
+    label: "Knowledge ops",
+    body: "llm-kb supports sync, compile, search, ask, synthesize, curate, publish, and status workflows for reusable project memory.",
   },
   {
-    value: "30",
-    label: "Quality",
-    body: "Rewards answers that are structured, appropriately sized, and not obviously broken.",
+    value: "AG",
+    label: "Agent routing",
+    body: "llm-kb can recommend relevant agents and generate task-ready activation prompts for role-specific execution.",
   },
   {
-    value: "20",
-    label: "Coverage",
-    body: "Measures how often the assistant clears the pass threshold across the full question set.",
+    value: "OP",
+    label: "Operationalization",
+    body: "Mistake tracking, publish-safe outputs, weekly briefs, and deployment automation support a more professional operating model.",
   },
 ];
 
 const knobs = [
-  "SYSTEM_PROMPT and business-specific tone",
-  "FEW_SHOT_EXAMPLES for weak categories",
-  "RESPONSE_RULES for edge-case behavior",
-  "retrieve_context() and relevance thresholds",
-  "TEMPERATURE and MAX_TOKENS for output control",
+  "llm-kb agents for best-fit specialist selection",
+  "llm-kb agent-start for activation-ready execution prompts",
+  "llm-kb mistake-check and mistake-autolearn for guardrails",
+  "llm-kb synthesize and publish for reusable outputs",
+  "config.py and evaluate.py for answer quality and retrieval tuning",
 ];
 
 const runbook = [
-  "cp .env.example .env",
-  "Add GEMINI_API_KEY",
-  "python prepare.py",
+  "llm-kb sync",
+  "llm-kb compile",
+  "llm-kb agents \"customized AI integration build\"",
+  "llm-kb agent-start \"enterprise delivery hardening\" --copy",
   "python evaluate.py --verbose",
-  "python evaluate.py --commit",
+  "llm-kb publish outputs/brief.md --target outputs --into publish",
 ];
 
 export default function ScoreSection() {
@@ -46,12 +47,12 @@ export default function ScoreSection() {
       <div className="section-inner">
         <div className="section-label reveal">Scoring</div>
         <h2 className="section-heading reveal">
-          Optimize with evidence, not vibes.
+          Operational readiness, not just model tuning.
         </h2>
         <p className="section-copy reveal">
-          The evaluation harness already separates accuracy, quality, and
-          coverage, so the agent has a concrete target instead of a hand-wavy
-          prompt brief.
+          The page now presents llm-kb as part of the platform capability set:
+          knowledge operations, agent routing, publish-safe outputs, and the
+          existing evaluation harness for evidence-based improvement.
         </p>
 
         <div className="score-layout">
@@ -67,8 +68,8 @@ export default function ScoreSection() {
 
           <div className="command-panel reveal">
             <div className="command-panel-header">
-              <span>Runbook</span>
-              <code>evaluate.py</code>
+              <span>Operational runbook</span>
+              <code>llm-kb + evaluate.py</code>
             </div>
 
             <div className="command-list">
@@ -92,11 +93,11 @@ export default function ScoreSection() {
             <div className="button-row button-row-left">
               <a
                 className="button button-primary"
-                href={repoLinks.program}
+                href={repoLinks.readme}
                 target="_blank"
                 rel="noreferrer"
               >
-                Read program.md
+                Read implementation docs
               </a>
               <a
                 className="button button-secondary"
@@ -104,7 +105,7 @@ export default function ScoreSection() {
                 target="_blank"
                 rel="noreferrer"
               >
-                Inspect config.py
+                Inspect tuning surface
               </a>
             </div>
           </div>

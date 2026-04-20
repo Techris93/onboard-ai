@@ -2,16 +2,17 @@ import { repoLinks } from "../lib/site";
 
 const linkGroups = [
   {
-    title: "Workflow",
+    title: "Platform",
     links: [
       { label: "Hero", href: "#top" },
+      { label: "Capabilities", href: "#capabilities" },
       { label: "Process", href: "#workflow" },
-      { label: "Engine", href: "#engine" },
-      { label: "Scoring", href: "#scoring" },
+      { label: "Agent System", href: "#agents" },
+      { label: "Readiness", href: "#scoring" },
     ],
   },
   {
-    title: "Repository",
+    title: "Implementation",
     links: [
       { label: "README", href: repoLinks.readme },
       { label: "program.md", href: repoLinks.program },
@@ -37,8 +38,9 @@ export default function Footer() {
         <div className="footer-brand">
           <div className="brand-mark">OnboardAI</div>
           <p className="footer-copy">
-            A visible workflow for turning business knowledge into a measured,
-            domain-specific assistant.
+            Customized AI integration for small to mid-sized companies, with a
+            stronger path toward enterprise-grade delivery, governance, and
+            operational support.
           </p>
         </div>
 
@@ -64,7 +66,7 @@ export default function Footer() {
 
       <div className="footer-bar">
         <span>{new Date().getFullYear()} OnboardAI</span>
-        <span>Built around prepare.py, config.py, and evaluate.py</span>
+        <span>Built around llm-kb, agent orchestration, and measurable AI delivery</span>
       </div>
     </footer>
   );

@@ -3,28 +3,28 @@ import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
 
 const features = [
   {
-    title: "A visible agent surface",
-    description: "program.md tells the optimizer what it may change and config.py keeps every prompt and retrieval tweak in plain sight.",
+    title: "llm-kb agent recommendation and activation",
+    description: "Use llm-kb agents, agent-show, agent-use, and agent-start to move from a request to a role-specific execution path quickly and consistently.",
   },
   {
-    title: "Document-first ingestion",
-    description: "prepare.py can bootstrap a sample business or turn text and markdown files into a knowledge base you can inspect and version.",
+    title: "Local-first knowledge compilation",
+    description: "Sync, compile, search, ask, and synthesize project memory into reusable markdown outputs instead of losing context across chats and repos.",
   },
   {
-    title: "Retrieval you can tune",
-    description: "MAX_CONTEXT_TOPICS, RELEVANCE_THRESHOLD, USE_FULL_KNOWLEDGE, and retrieve_context() give you explicit control over what the model sees.",
+    title: "Operational memory and mistake guardrails",
+    description: "llm-kb can track recurring mistakes, surface guardrails, and keep the team from relearning the same expensive lessons on each rollout.",
   },
   {
-    title: "A score instead of a vibe",
-    description: "evaluate.py measures accuracy, quality, and coverage so changes compete on evidence instead of intuition.",
+    title: "Publish-safe outputs and executive artifacts",
+    description: "Generate briefs, reports, and sanitized outputs that are useful for internal delivery, stakeholder updates, and controlled sharing.",
   },
 ];
 
 const repoArtifacts = [
-  { label: "Agent instructions", file: "program.md" },
-  { label: "Optimization surface", file: "config.py" },
-  { label: "Business knowledge", file: "data/knowledge.json" },
-  { label: "Test questions", file: "data/test_qa.json" },
+  { label: "Knowledge sync", file: "llm-kb sync" },
+  { label: "Agent routing", file: "llm-kb agents" },
+  { label: "Direct activation", file: "llm-kb agent-start" },
+  { label: "Safe publishing", file: "llm-kb publish" },
 ];
 
 function OrbitVisualization() {
@@ -54,9 +54,9 @@ function OrbitVisualization() {
         </g>
 
         {[
-          { cx: 200, cy: 56, label: "PREPARE" },
-          { cx: 324, cy: 272, label: "CONFIG" },
-          { cx: 76, cy: 272, label: "EVALUATE" },
+          { cx: 200, cy: 56, label: "SYNC" },
+          { cx: 324, cy: 272, label: "ROUTE" },
+          { cx: 76, cy: 272, label: "DEPLOY" },
         ].map((node) => (
           <g key={node.label}>
             <circle
@@ -114,12 +114,13 @@ export default function PlatformSection() {
         <div className="platform-copy">
           <div className="section-label reveal">Engine</div>
           <h2 className="section-heading reveal">
-            Everything important stays visible and diffable.
+            llm-kb turns scattered work into a usable delivery engine.
           </h2>
           <p className="section-copy reveal">
-            This is not a black-box assistant builder. The repo makes it easy to
-            inspect what data went in, what the agent changed, and why an
-            iteration scored better than the last one.
+            This is no longer framed as a black-box assistant builder. The
+            website now shows how OnboardAI can combine knowledge compilation,
+            specialist-agent routing, output synthesis, and publish-safe
+            operational workflows in one platform narrative.
           </p>
 
           <div className="feature-list">

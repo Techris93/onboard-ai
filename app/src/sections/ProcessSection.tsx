@@ -4,21 +4,21 @@ import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
 const steps = [
   {
     number: "01",
-    title: "Prepare the knowledge base",
-    body: "Import .txt or .md files with prepare.py, or edit data/knowledge.json and data/test_qa.json directly when you want tight control over the domain.",
-    command: "python prepare.py --import-docs ./docs",
+    title: "Ingest and structure the company context",
+    body: "Use llm-kb and the project data flow to sync source material, compile reusable knowledge, and keep onboarding artifacts visible and searchable.",
+    command: "llm-kb sync && llm-kb compile",
   },
   {
     number: "02",
-    title: "Tune the assistant config",
-    body: "Let the agent refine the system prompt, few-shot examples, response rules, model settings, and retrieval thresholds inside one diffable file: config.py.",
-    command: "config.py",
+    title: "Select the right specialist agents",
+    body: "Route the work through llm-kb’s agent recommendation layer so frontend, AI, backend, security, DevOps, QA, and support roles appear where they add real value.",
+    command: "llm-kb agents \"customized AI integration rollout\"",
   },
   {
     number: "03",
-    title: "Evaluate and keep winners",
-    body: "Run the scoring harness, inspect weak categories, and keep improvements that raise answer accuracy, response quality, and question coverage.",
-    command: "python evaluate.py --commit",
+    title: "Validate, harden, and deploy professionally",
+    body: "Use the evaluation harness, evidence-based QA, and deployment automation to move from proof of concept toward enterprise-ready delivery.",
+    command: "python evaluate.py --verbose",
   },
 ];
 
@@ -32,17 +32,12 @@ export default function ProcessSection() {
       <div className="section-inner">
         <div className="section-label reveal">Workflow</div>
         <h2 className="section-heading reveal">
-          Three files, one loop, no hidden magic.
+          A delivery workflow that can grow past demo status.
         </h2>
         <p className="section-copy reveal">
-          The repository keeps the optimization surface visible: data lives in
-          JSON, agent instructions live in
-          {" "}
-          <code>program.md</code>
-          , and the actual prompt-and-retrieval controls live in
-          {" "}
-          <code>config.py</code>
-          .
+          The site now frames OnboardAI as a complete execution model: local
+          knowledge operations, relevant llm-kb agent selection, configurable AI
+          behavior, and measurable quality before deployment.
         </p>
 
         <div className="process-grid">
