@@ -4,7 +4,7 @@ import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
 const capabilities = [
   {
     title: "Customized AI integration for small to mid-sized companies",
-    body: "OnboardAI is now positioned as a tailored delivery model for companies that need AI to fit their operating reality, not the other way around.",
+    body: "OnboardAI is a tailored delivery model for companies that need AI to fit their operating reality, not the other way around.",
     points: [
       "Domain-specific assistants built from internal documents, product knowledge, and operating procedures",
       "Implementation scope shaped around each company’s workflows, team maturity, and escalation model",
@@ -13,7 +13,7 @@ const capabilities = [
   },
   {
     title: "Local-first knowledge operations with llm-kb",
-    body: "The site now surfaces llm-kb as a core capability, not a hidden utility. That means searchable project memory, reusable outputs, and automation around agent selection and synthesis.",
+    body: "llm-kb serves as a core capability, turning project memory, reusable outputs, and agent selection into a practical delivery layer.",
     points: [
       "Sync, compile, search, ask, synthesize, curate, and publish knowledge artifacts locally",
       "Reusable markdown outputs for briefs, executive notes, reports, and decision support",
@@ -44,9 +44,9 @@ export default function CapabilitiesSection() {
           A service-ready AI platform, not just a prompt experiment.
         </h2>
         <p className="section-copy reveal">
-          The website now tells a more professional story: structured knowledge
-          operations, specialist-agent delivery, and a path from SMB deployment
-          to enterprise-grade governance.
+          Structured knowledge operations, specialist-agent delivery, and a
+          path from SMB deployment to enterprise-grade governance define the
+          platform.
         </p>
 
         <div className="capability-grid">

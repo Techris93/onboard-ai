@@ -32,8 +32,8 @@ export default function ProcessSection() {
           A delivery workflow that can grow past demo status.
         </h2>
         <p className="section-copy reveal">
-          The site now frames OnboardAI as a complete execution model: local
-          knowledge operations, relevant llm-kb agent selection, configurable AI
+          OnboardAI works as a complete execution model: local knowledge
+          operations, relevant llm-kb agent selection, configurable AI
           behavior, and measurable quality before deployment.
         </p>
 

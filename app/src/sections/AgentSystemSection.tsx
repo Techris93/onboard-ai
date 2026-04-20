@@ -47,10 +47,9 @@ export default function AgentSystemSection() {
           llm-kb can route the work to the right specialist agents.
         </h2>
         <p className="section-copy reveal">
-          Instead of treating agent support as a vague future idea, the site now
-          frames a concrete delivery stack based on the relevant llm-kb
-          recommendation flow and specialist roles already available in the
-          imported agent library.
+          The platform uses a concrete delivery stack based on the relevant
+          llm-kb recommendation flow and specialist roles already available in
+          the imported agent library.
         </p>
 
         <div className="agent-table reveal">

@@ -47,9 +47,9 @@ export default function ScoreSection() {
           Operational readiness, not just model tuning.
         </h2>
         <p className="section-copy reveal">
-          The page now presents llm-kb as part of the platform capability set:
-          knowledge operations, agent routing, publish-safe outputs, and the
-          existing evaluation harness for evidence-based improvement.
+          llm-kb is part of the platform capability set: knowledge operations,
+          agent routing, publish-safe outputs, and the existing evaluation
+          harness for evidence-based improvement.
         </p>
 
         <div className="score-layout">

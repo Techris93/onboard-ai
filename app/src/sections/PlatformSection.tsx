@@ -129,10 +129,9 @@ export default function PlatformSection() {
             llm-kb turns scattered work into a usable delivery engine.
           </h2>
           <p className="section-copy reveal">
-            This is no longer framed as a black-box assistant builder. The
-            website now shows how OnboardAI can combine knowledge compilation,
-            specialist-agent routing, output synthesis, and publish-safe
-            operational workflows in one platform narrative.
+            OnboardAI combines knowledge compilation, specialist-agent routing,
+            output synthesis, and publish-safe operational workflows in one
+            delivery engine.
           </p>
 
           <div className="feature-list">

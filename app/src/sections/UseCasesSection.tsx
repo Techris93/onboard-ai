@@ -41,7 +41,7 @@ export default function UseCasesSection() {
           Built for AI integrations that need to survive real operations.
         </h2>
         <p className="section-copy reveal">
-          The website now speaks to service buyers and delivery teams alike:
+          The platform supports service buyers and delivery teams alike:
           customer support, internal copilots, domain-specific assistants, and
           professional rollout programs.
         </p>

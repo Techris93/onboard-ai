@@ -26,10 +26,10 @@ export default function HeroSection() {
         </h1>
 
         <p className="hero-copy reveal">
-          OnboardAI now presents a stronger, service-ready offering: use
-          company knowledge, llm-kb knowledge operations, and relevant
-          specialist agents to design, secure, deploy, and support AI systems
-          that feel credible for real businesses and professional buyers.
+          OnboardAI combines company knowledge, llm-kb knowledge operations,
+          and relevant specialist agents to design, secure, deploy, and
+          support AI systems that feel credible for real businesses and
+          professional buyers.
         </p>
 
         <div className="button-row reveal">
