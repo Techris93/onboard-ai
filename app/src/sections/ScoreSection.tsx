@@ -1,6 +1,5 @@
 import { useRef } from "react";
 import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
-import { repoLinks } from "../lib/site";
 
 const scores = [
   {
@@ -20,21 +19,19 @@ const scores = [
   },
 ];
 
-const knobs = [
-  "llm-kb agents for best-fit specialist selection",
-  "llm-kb agent-start for activation-ready execution prompts",
-  "llm-kb mistake-check and mistake-autolearn for guardrails",
-  "llm-kb synthesize and publish for reusable outputs",
-  "config.py and evaluate.py for answer quality and retrieval tuning",
-];
-
-const runbook = [
-  "llm-kb sync",
-  "llm-kb compile",
-  "llm-kb agents \"customized AI integration build\"",
-  "llm-kb agent-start \"enterprise delivery hardening\" --copy",
-  "python evaluate.py --verbose",
-  "llm-kb publish outputs/brief.md --target outputs --into publish",
+const readinessPillars = [
+  {
+    title: "Security-conscious delivery",
+    body: "Security review, access control thinking, and governance language are part of the product story from the start.",
+  },
+  {
+    title: "Evidence-based quality",
+    body: "The platform emphasizes measurable evaluation, visible validation, and disciplined hardening before launch.",
+  },
+  {
+    title: "Deployment and support continuity",
+    body: "Operational automation, documentation, and support readiness help the rollout survive beyond the initial build.",
+  },
 ];
 
 export default function ScoreSection() {
@@ -66,47 +63,18 @@ export default function ScoreSection() {
             ))}
           </div>
 
-          <div className="command-panel reveal">
-            <div className="command-panel-header">
-              <span>Operational runbook</span>
-              <code>llm-kb + evaluate.py</code>
+          <div className="readiness-panel reveal">
+            <div className="readiness-panel-header">
+              <span>Readiness pillars</span>
             </div>
 
-            <div className="command-list">
-              {runbook.map((step, index) => (
-                <div key={step} className="command-line">
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <code>{step}</code>
-                </div>
+            <div className="readiness-list">
+              {readinessPillars.map((pillar) => (
+                <article key={pillar.title} className="readiness-item">
+                  <h3 className="readiness-title">{pillar.title}</h3>
+                  <p className="card-copy">{pillar.body}</p>
+                </article>
               ))}
-            </div>
-
-            <div className="knob-list">
-              <h3 className="knob-heading">Agent-editable knobs</h3>
-              <ul>
-                {knobs.map((knob) => (
-                  <li key={knob}>{knob}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="button-row button-row-left">
-              <a
-                className="button button-primary"
-                href={repoLinks.readme}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Read implementation docs
-              </a>
-              <a
-                className="button button-secondary"
-                href={repoLinks.config}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Inspect tuning surface
-              </a>
             </div>
           </div>
         </div>

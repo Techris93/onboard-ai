@@ -6,19 +6,16 @@ const steps = [
     number: "01",
     title: "Ingest and structure the company context",
     body: "Use llm-kb and the project data flow to sync source material, compile reusable knowledge, and keep onboarding artifacts visible and searchable.",
-    command: "llm-kb sync && llm-kb compile",
   },
   {
     number: "02",
     title: "Select the right specialist agents",
     body: "Route the work through llm-kb’s agent recommendation layer so frontend, AI, backend, security, DevOps, QA, and support roles appear where they add real value.",
-    command: "llm-kb agents \"customized AI integration rollout\"",
   },
   {
     number: "03",
     title: "Validate, harden, and deploy professionally",
     body: "Use the evaluation harness, evidence-based QA, and deployment automation to move from proof of concept toward enterprise-ready delivery.",
-    command: "python evaluate.py --verbose",
   },
 ];
 
@@ -46,10 +43,6 @@ export default function ProcessSection() {
               <div className="process-number">{step.number}</div>
               <h3 className="card-heading">{step.title}</h3>
               <p className="card-copy">{step.body}</p>
-              <div className="command-chip">
-                <span className="command-chip-label">Focus</span>
-                <code>{step.command}</code>
-              </div>
             </article>
           ))}
         </div>

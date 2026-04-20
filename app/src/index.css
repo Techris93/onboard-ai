@@ -251,13 +251,6 @@ code {
   line-height: 1.8;
 }
 
-.hero-command-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1rem;
-  margin-top: 2.5rem;
-}
-
 .hero-proof-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -274,24 +267,8 @@ code {
   line-height: 1.6;
 }
 
-.hero-links {
-  justify-content: center;
-  margin-top: 1.35rem;
-}
-
-.text-link {
-  color: var(--sea);
-  font-size: 0.96rem;
-  transition: color 180ms ease;
-}
-
-.text-link:hover {
-  color: var(--text);
-}
-
 .command-pill,
 .glass-card,
-.command-panel,
 .artifact-card,
 .metric-card {
   border: 1px solid var(--border);
@@ -303,32 +280,18 @@ code {
   box-shadow: var(--shadow);
 }
 
-.command-pill {
-  padding: 1.1rem 1.25rem;
-  border-radius: var(--radius-md);
-  text-align: left;
-}
-
 .command-pill-label,
-.command-chip-label,
 .usecase-tag,
 .footer-title,
 .usecase-label,
 .knob-heading,
-.command-panel-header span {
+.readiness-panel-header span {
   display: inline-block;
   font-family: var(--mono-font);
   font-size: 0.7rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--accent);
-}
-
-.command-pill code {
-  display: block;
-  margin-top: 0.45rem;
-  color: var(--text);
-  font-size: 0.92rem;
 }
 
 .scroll-indicator {
@@ -405,18 +368,6 @@ code {
   margin-top: 0.65rem;
 }
 
-.command-chip {
-  margin-top: 1.4rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(245, 239, 231, 0.08);
-}
-
-.command-chip code {
-  display: block;
-  margin-top: 0.5rem;
-  color: var(--text);
-}
-
 .platform-layout,
 .score-layout,
 .footer-grid {
@@ -474,12 +425,15 @@ code {
 }
 
 .artifact-card span {
-  color: var(--muted);
-  font-size: 0.92rem;
+  color: var(--text);
+  font-size: 0.98rem;
+  letter-spacing: -0.01em;
 }
 
-.artifact-card code {
-  color: var(--text);
+.artifact-detail {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
 }
 
 .platform-visual-sticky {
@@ -624,64 +578,42 @@ code {
   border-radius: var(--radius-lg);
 }
 
-.command-panel {
+.readiness-panel {
   padding: 1.8rem;
   border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(circle at top left, rgba(216, 163, 109, 0.08), transparent 32%),
+    linear-gradient(180deg, rgba(13, 19, 36, 0.74), rgba(7, 11, 21, 0.88));
+  box-shadow: var(--shadow);
 }
 
-.command-panel-header {
+.readiness-panel-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid rgba(245, 239, 231, 0.08);
 }
 
-.command-panel-header code {
-  color: var(--sea);
-}
-
-.command-list {
+.readiness-list {
   display: grid;
-  gap: 0.8rem;
+  gap: 1rem;
   margin-top: 1.4rem;
 }
 
-.command-line {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.9rem;
-  padding: 0.95rem 1rem;
+.readiness-item {
+  padding: 1rem 1rem 1.1rem;
   border-radius: var(--radius-sm);
   background: rgba(245, 239, 231, 0.03);
   border: 1px solid rgba(245, 239, 231, 0.06);
 }
 
-.command-line span {
-  font-family: var(--mono-font);
-  color: var(--accent);
-}
-
-.knob-list {
-  margin-top: 1.8rem;
-  padding-top: 1.3rem;
-  border-top: 1px solid rgba(245, 239, 231, 0.08);
-}
-
-.knob-heading {
-  color: var(--sea);
-}
-
-.knob-list ul {
-  margin: 0.8rem 0 0;
-  padding-left: 1.2rem;
-}
-
-.button-row-left {
-  justify-content: flex-start;
-  margin-top: 1.8rem;
-  flex-wrap: wrap;
+.readiness-title {
+  margin: 0;
+  font-size: 1.08rem;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
 }
 
 .site-footer {
@@ -793,7 +725,6 @@ code {
   }
 
   .hero-proof-grid,
-  .hero-command-grid,
   .process-grid,
   .capability-grid,
   .usecase-grid,

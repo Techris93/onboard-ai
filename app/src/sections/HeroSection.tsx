@@ -1,13 +1,5 @@
 import { useRef } from "react";
 import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
-import { repoLinks } from "../lib/site";
-
-const heroCommands = [
-  "llm-kb sync && llm-kb compile",
-  "llm-kb agents \"enterprise onboarding ai build\"",
-  "llm-kb agent-start \"professionalize deployment\" --copy",
-  "python evaluate.py --verbose",
-];
 
 const heroProof = [
   "Customized AI integration for small to mid-sized companies.",
@@ -55,34 +47,6 @@ export default function HeroSection() {
               {item}
             </div>
           ))}
-        </div>
-
-        <div className="hero-command-grid reveal" aria-label="Core commands">
-          {heroCommands.map((command) => (
-            <div key={command} className="command-pill">
-              <span className="command-pill-label">Capability</span>
-              <code>{command}</code>
-            </div>
-          ))}
-        </div>
-
-        <div className="button-row hero-links reveal">
-          <a
-            className="text-link"
-            href={repoLinks.repo}
-            target="_blank"
-            rel="noreferrer"
-          >
-            OnboardAI repository
-          </a>
-          <a
-            className="text-link"
-            href={repoLinks.readme}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Delivery workflow docs
-          </a>
         </div>
 
         <div className="scroll-indicator" aria-hidden="true" />

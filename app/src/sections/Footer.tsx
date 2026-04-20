@@ -1,32 +1,30 @@
-import { repoLinks } from "../lib/site";
-
 const linkGroups = [
   {
     title: "Platform",
     links: [
-      { label: "Hero", href: "#top" },
       { label: "Capabilities", href: "#capabilities" },
-      { label: "Process", href: "#workflow" },
+      { label: "Workflow", href: "#workflow" },
+      { label: "Engine", href: "#engine" },
       { label: "Agent System", href: "#agents" },
       { label: "Readiness", href: "#scoring" },
     ],
   },
   {
-    title: "Implementation",
+    title: "Solutions",
     links: [
-      { label: "README", href: repoLinks.readme },
-      { label: "program.md", href: repoLinks.program },
-      { label: "config.py", href: repoLinks.config },
-      { label: "evaluate.py", href: repoLinks.evaluate },
+      { label: "Customer Support AI", href: "#use-cases" },
+      { label: "Internal Knowledge AI", href: "#use-cases" },
+      { label: "Domain-Specific Assistants", href: "#use-cases" },
+      { label: "Enterprise Rollout Paths", href: "#use-cases" },
     ],
   },
   {
-    title: "Data",
+    title: "Approach",
     links: [
-      { label: "prepare.py", href: repoLinks.prepare },
-      { label: ".env.example", href: repoLinks.env },
-      { label: "knowledge.json", href: repoLinks.knowledge },
-      { label: "test_qa.json", href: repoLinks.tests },
+      { label: "Customized Integration", href: "#top" },
+      { label: "Specialist Agents", href: "#agents" },
+      { label: "Knowledge Operations", href: "#engine" },
+      { label: "Operational Readiness", href: "#scoring" },
     ],
   },
 ];

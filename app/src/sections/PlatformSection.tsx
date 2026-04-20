@@ -20,11 +20,23 @@ const features = [
   },
 ];
 
-const repoArtifacts = [
-  { label: "Knowledge sync", file: "llm-kb sync" },
-  { label: "Agent routing", file: "llm-kb agents" },
-  { label: "Direct activation", file: "llm-kb agent-start" },
-  { label: "Safe publishing", file: "llm-kb publish" },
+const deliveryPillars = [
+  {
+    label: "Knowledge memory",
+    detail: "Structured project memory that can support onboarding, implementation, and ongoing operations.",
+  },
+  {
+    label: "Agent orchestration",
+    detail: "Relevant specialist roles can be surfaced at the right time instead of overloading one generic assistant.",
+  },
+  {
+    label: "Executive outputs",
+    detail: "Briefs, reports, and reusable summaries help stakeholders stay aligned without reading raw implementation detail.",
+  },
+  {
+    label: "Operational guardrails",
+    detail: "Mistake tracking and workflow discipline reduce regression risk as the system evolves.",
+  },
 ];
 
 function OrbitVisualization() {
@@ -138,10 +150,10 @@ export default function PlatformSection() {
           </div>
 
           <div className="artifact-grid reveal">
-            {repoArtifacts.map((artifact) => (
-              <div key={artifact.file} className="artifact-card">
+            {deliveryPillars.map((artifact) => (
+              <div key={artifact.label} className="artifact-card">
                 <span>{artifact.label}</span>
-                <code>{artifact.file}</code>
+                <p className="artifact-detail">{artifact.detail}</p>
               </div>
             ))}
           </div>
