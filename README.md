@@ -29,6 +29,22 @@ python evaluate.py --verbose
 # 5. Point your AI agent at program.md to start optimizing
 ```
 
+## Frontend
+
+A lightweight React/Vite landing page now lives in `app/`. It mirrors the
+actual repository workflow instead of inventing product features, so you can
+use it as a project homepage, demo shell, or launch pad for future UI work.
+
+```bash
+cd app
+npm install
+npm run dev
+```
+
+The frontend is intentionally separate from the Python harness:
+- Root Python files still drive data prep, config tuning, and evaluation.
+- `app/` is a presentational frontend for explaining and showcasing that loop.
+
 ## How It Works
 
 ```
@@ -79,6 +95,7 @@ prepare.py   — Load/generate business data (DO NOT MODIFY)
 config.py    — AI configuration (AGENT MODIFIES THIS)
 evaluate.py  — Scoring engine (DO NOT MODIFY)
 program.md   — Agent instructions
+app/         — React/Vite frontend for the project homepage
 ```
 
 ## License
