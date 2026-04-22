@@ -2,7 +2,8 @@
 OnboardAI — Evaluation Harness
 Scores the AI config from config.py against test Q&A pairs.
 
-DO NOT MODIFY THIS FILE. The agent only modifies config.py.
+Most day-to-day optimization work should happen in config.py, but the
+evaluation harness can still be improved for reliability and tooling.
 
 Scoring (0-100):
   - Accuracy (50 pts)  — Does the answer contain the key facts?
@@ -22,6 +23,7 @@ import sys
 import re
 import asyncio
 import argparse
+import random
 import subprocess
 from datetime import datetime
 from typing import Dict, List, Any, Optional
@@ -86,21 +88,83 @@ async def ask_model(prompt: str) -> str:
     if client is None:
         return "[AI unavailable: set GEMINI_API_KEY in .env]"
 
-    try:
-        loop = asyncio.get_event_loop()
-        if _USE_LEGACY:
-            response = await loop.run_in_executor(
-                None, lambda: client.generate_content(prompt)
-            )
-        else:
-            response = await loop.run_in_executor(
-                None, lambda: client.models.generate_content(
-                    model="gemini-2.5-flash", contents=prompt
+    loop = asyncio.get_event_loop()
+    last_error = None
+
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            if _USE_LEGACY:
+                response = await loop.run_in_executor(
+                    None, lambda: client.generate_content(prompt)
                 )
+            else:
+                response = await loop.run_in_executor(
+                    None, lambda: client.models.generate_content(
+                        model="gemini-2.5-flash", contents=prompt
+                    )
+                )
+
+            text = getattr(response, "text", "") or ""
+            return text.strip() if text.strip() else "[AI error: empty response]"
+        except Exception as e:
+            last_error = e
+            if attempt >= MAX_RETRIES or not _is_retryable_error(e):
+                break
+
+            delay = _compute_retry_delay(e, attempt)
+            print(
+                f"  ↻ Gemini transient error "
+                f"(attempt {attempt}/{MAX_RETRIES}): "
+                f"retrying in {delay:.1f}s"
             )
-        return response.text.strip()
-    except Exception as e:
-        return f"[AI error: {e}]"
+            await asyncio.sleep(delay)
+
+    return f"[AI error: {last_error}]"
+
+
+MAX_RETRIES = 4
+RETRY_BASE_DELAY = 2.0
+RETRYABLE_ERROR_MARKERS = (
+    "429",
+    "503",
+    "RESOURCE_EXHAUSTED",
+    "UNAVAILABLE",
+    "rate limit",
+    "quota",
+    "temporarily unavailable",
+    "service unavailable",
+)
+
+
+def _is_retryable_error(error: Exception) -> bool:
+    text = str(error).lower()
+    return any(marker.lower() in text for marker in RETRYABLE_ERROR_MARKERS)
+
+
+def _extract_retry_delay_seconds(message: str) -> Optional[float]:
+    patterns = (
+        r"retry_delay\s*\{\s*seconds:\s*(\d+)",
+        r"retry in\s*(\d+(?:\.\d+)?)s",
+        r"retry in\s*(\d+(?:\.\d+)?)\s*seconds?",
+        r'"retryDelay"\s*:\s*"(\d+(?:\.\d+)?)s"',
+    )
+
+    for pattern in patterns:
+        match = re.search(pattern, message, re.IGNORECASE | re.DOTALL)
+        if match:
+            return float(match.group(1))
+
+    return None
+
+
+def _compute_retry_delay(error: Exception, attempt: int) -> float:
+    explicit_delay = _extract_retry_delay_seconds(str(error))
+    if explicit_delay is not None:
+        return explicit_delay
+
+    backoff = RETRY_BASE_DELAY * (2 ** (attempt - 1))
+    jitter = random.uniform(0, min(1.0, backoff * 0.15))
+    return backoff + jitter
 
 
 # ═══ Scoring ═════════════════════════════════════════════════════════════════
@@ -198,8 +262,16 @@ def score_answer(actual: str, expected: str) -> Dict[str, Any]:
 
 # ═══ Evaluation ══════════════════════════════════════════════════════════════
 
-async def run_evaluation(verbose: bool = False) -> Dict:
+async def run_evaluation(
+    verbose: bool = False,
+    max_retries: int = MAX_RETRIES,
+    retry_base_delay: float = RETRY_BASE_DELAY,
+) -> Dict:
     """Run the full evaluation."""
+    global MAX_RETRIES, RETRY_BASE_DELAY
+    MAX_RETRIES = max(1, max_retries)
+    RETRY_BASE_DELAY = max(0.1, retry_base_delay)
+
     # Load data
     if not os.path.exists(KNOWLEDGE_FILE) or not os.path.exists(TEST_FILE):
         print("❌ Run `python prepare.py` first.")
@@ -338,6 +410,11 @@ async def main():
     parser.add_argument("--verbose", action="store_true")
     parser.add_argument("--commit", action="store_true")
     parser.add_argument("--baseline", action="store_true")
+    parser.add_argument("--max-retries", type=int, default=MAX_RETRIES,
+                        help="Total Gemini attempts per question (default: 4)")
+    parser.add_argument("--retry-base-delay", type=float,
+                        default=RETRY_BASE_DELAY,
+                        help="Initial backoff delay in seconds (default: 2.0)")
     args = parser.parse_args()
 
     os.makedirs(DATA_DIR, exist_ok=True)
@@ -351,7 +428,11 @@ async def main():
             print("No baseline yet. Run `python evaluate.py` first.")
         return
 
-    score = await run_evaluation(verbose=args.verbose)
+    score = await run_evaluation(
+        verbose=args.verbose,
+        max_retries=args.max_retries,
+        retry_base_delay=args.retry_base_delay,
+    )
     print_results(score, verbose=args.verbose)
 
     # Track best

@@ -29,6 +29,30 @@ python evaluate.py --verbose
 # 5. Point your AI agent at program.md to start optimizing
 ```
 
+`evaluate.py` now retries transient Gemini `429` and `503` failures with
+backoff, so benchmark runs are less likely to fail on short-lived API issues.
+
+## Private Public-Data Validation
+
+Use the private validation runner when you want to onboard a public company for
+testing without writing that demo data into the repo's tracked `data/` files or
+the website.
+
+```bash
+python validate_public_company.py \
+  --business-name "Acme Cloud" \
+  --url https://acme.com \
+  --url https://acme.com/docs \
+  --url https://acme.com/pricing \
+  --num-qa 12 \
+  --verbose-eval
+```
+
+Notes:
+- The runner copies the Python harness into an isolated temp workspace.
+- Use `--depth` and `--max-pages` only when you want the scraper to crawl beyond the exact URLs you listed.
+- Use `--cleanup` if you want the temp workspace deleted after a successful run.
+
 ## Frontend
 
 A lightweight React/Vite landing page now lives in `app/`. It mirrors the
@@ -93,7 +117,8 @@ Edit `data/knowledge.json` with your business info and `data/test_qa.json` with 
 ```
 prepare.py   — Load/generate business data (DO NOT MODIFY)
 config.py    — AI configuration (AGENT MODIFIES THIS)
-evaluate.py  — Scoring engine (DO NOT MODIFY)
+evaluate.py  — Scoring engine with retry-aware Gemini evaluation
+validate_public_company.py  — Private temp-workspace public-data validation
 program.md   — Agent instructions
 app/         — React/Vite frontend for the project homepage
 ```
