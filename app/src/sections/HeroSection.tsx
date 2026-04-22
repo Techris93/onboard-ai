@@ -37,7 +37,7 @@ export default function HeroSection() {
             Start Onboarding
           </a>
           <a className="button button-secondary" href="#pilot">
-            See Public Pilot
+            See Validation Path
           </a>
         </div>
 

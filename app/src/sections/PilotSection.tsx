@@ -1,14 +1,27 @@
 import { useRef } from "react";
 import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
-import {
-  buildOnboardingResult,
-  publicPilot,
-  supabasePilotProfile,
-} from "../lib/onboarding";
+
+const validationMetrics = [
+  { label: "Test workspace", value: "Private" },
+  { label: "Source policy", value: "Official-only" },
+  { label: "Before client data", value: "Required" },
+  { label: "Website exposure", value: "None" },
+];
+
+const validationChecklist = [
+  "Choose one public company or platform and collect only official public sources in a temporary workspace.",
+  "Generate a Q&A set and run the evaluation harness before touching private customer documentation.",
+  "Tune prompts and retrieval privately, then carry only the lessons and generic product improvements back into the website.",
+];
+
+const validationOutputs = [
+  "A private benchmark for source coverage, retrieval behavior, and model accuracy.",
+  "A safe rehearsal for llm-kb agent selection, synthesis, and onboarding operations.",
+  "A cleaner launch path because the public test stays off the customer-facing dashboard.",
+];
 
 export default function PilotSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const pilotResult = buildOnboardingResult(supabasePilotProfile);
 
   useRevealOnScroll(sectionRef);
 
@@ -16,14 +29,20 @@ export default function PilotSection() {
     <section id="pilot" ref={sectionRef} className="section section-dark">
       <div className="section-inner pilot-layout">
         <div className="pilot-copy">
-          <div className="section-label reveal">Public-data pilot</div>
+          <div className="section-label reveal">Validation</div>
           <h2 className="section-heading reveal">
-            Supabase is the best first public onboarding target.
+            Run public-source validation before importing real client data.
           </h2>
-          <p className="section-copy reveal">{publicPilot.summary}</p>
+          <p className="section-copy reveal">
+            Public-company tests are useful for proving the onboarding workflow,
+            but they belong in a temporary workspace, not on the public
+            dashboard. Use one external platform to validate source selection,
+            Q&amp;A generation, evaluation, and prompt tuning, then keep the
+            live site generic and client-ready.
+          </p>
 
           <div className="pilot-metric-grid">
-            {publicPilot.metrics.map((metric) => (
+            {validationMetrics.map((metric) => (
               <article key={metric.label} className="metric-card reveal">
                 <div className="metric-value">{metric.value}</div>
                 <h3 className="card-heading">{metric.label}</h3>
@@ -32,7 +51,7 @@ export default function PilotSection() {
           </div>
 
           <div className="pilot-note-list reveal">
-            {publicPilot.notes.map((note) => (
+            {validationChecklist.map((note) => (
               <div key={note} className="summary-list-item">
                 {note}
               </div>
@@ -41,53 +60,47 @@ export default function PilotSection() {
         </div>
 
         <div className="glass-card pilot-panel reveal">
-          <div className="summary-kicker">Pilot verdict</div>
+          <div className="summary-kicker">Validation protocol</div>
           <div className="pilot-verdict-row">
-            <div className="summary-score">{pilotResult.score}</div>
+            <div className="summary-score">01</div>
             <div>
-              <div className="summary-label">{publicPilot.verdict}</div>
+              <div className="summary-label">Keep the benchmark private</div>
               <p className="card-copy pilot-date">
-                First staging run completed on {publicPilot.dateLabel}.
+                Use public-company tests to validate the onboarding system, not
+                to populate the production dashboard.
               </p>
             </div>
           </div>
 
           <div className="summary-block">
-            <p className="footer-title">Agent fit for the pilot</p>
-            <div className="agent-pill-group">
-              {pilotResult.agents.map((agent) => (
-                <span key={agent} className="agent-pill">
-                  {agent}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="summary-block">
-            <p className="footer-title">Official source set</p>
-            <div className="pilot-link-list">
-              {publicPilot.links.map((link) => (
-                <a
-                  key={link.label}
-                  className="pilot-link"
-                  href={link.href}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
-          </div>
-
-          <div className="summary-block">
-            <p className="footer-title">What this pilot proves</p>
+            <p className="footer-title">Private validation checklist</p>
             <div className="summary-list">
-              {pilotResult.deliverables.map((item) => (
+              {validationChecklist.map((item) => (
                 <div key={item} className="summary-list-item">
                   {item}
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div className="summary-block">
+            <p className="footer-title">Why this matters</p>
+            <div className="summary-list">
+              {validationOutputs.map((item) => (
+                <div key={item} className="summary-list-item">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="summary-block">
+            <p className="footer-title">Production rule</p>
+            <div className="summary-list">
+              <div className="summary-list-item">
+                Only generic onboarding capabilities, delivery guidance, and
+                customer-approved materials should appear on the live website.
+              </div>
             </div>
           </div>
         </div>

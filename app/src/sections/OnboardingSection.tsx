@@ -11,7 +11,6 @@ import {
   industries,
   integrationModes,
   rolloutStages,
-  supabasePilotProfile,
   type DeliverySystem,
   type OnboardingProfile,
   type RolloutStage,
@@ -74,23 +73,6 @@ export default function OnboardingSection() {
           website can do the intake today, and the same packet can drive a live
           llm-kb workflow through a backend worker or local bridge.
         </p>
-
-        <div className="button-row reveal onboarding-actions">
-          <button
-            type="button"
-            className="button button-primary"
-            onClick={() => setProfile(supabasePilotProfile)}
-          >
-            Load Supabase Demo
-          </button>
-          <button
-            type="button"
-            className="button button-secondary"
-            onClick={() => setProfile(defaultOnboardingProfile)}
-          >
-            Reset Intake
-          </button>
-        </div>
 
         <div className="onboarding-layout">
           <form

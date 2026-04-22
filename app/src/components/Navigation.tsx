@@ -5,7 +5,7 @@ const navItems = [
   { label: "Product", href: "#product" },
   { label: "Resources", href: "#resources" },
   { label: "Company", href: "#company" },
-  { label: "Pilot", href: "#pilot" },
+  { label: "Validation", href: "#pilot" },
 ];
 
 export default function Navigation() {
