@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { repoLinks } from "../lib/site";
 
 const navItems = [
-  { label: "Capabilities", href: "#capabilities" },
-  { label: "Workflow", href: "#workflow" },
-  { label: "Agents", href: "#agents" },
-  { label: "Use Cases", href: "#use-cases" },
-  { label: "Readiness", href: "#scoring" },
+  { label: "Start Onboarding", href: "#onboarding" },
+  { label: "Product", href: "#product" },
+  { label: "Resources", href: "#resources" },
+  { label: "Company", href: "#company" },
+  { label: "Pilot", href: "#pilot" },
 ];
 
 export default function Navigation() {
@@ -43,17 +42,15 @@ export default function Navigation() {
         <div className="nav-actions">
           <a
             className="button button-secondary nav-secondary"
-            href={repoLinks.readme}
-            target="_blank"
-            rel="noreferrer"
+            href="#integration"
           >
-            README
+            Integration Model
           </a>
           <a
             className="button button-primary nav-primary"
-            href="#capabilities"
+            href="#onboarding"
           >
-            Explore Platform
+            Start Onboarding
           </a>
         </div>
       </div>

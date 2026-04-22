@@ -33,11 +33,11 @@ export default function HeroSection() {
         </p>
 
         <div className="button-row reveal">
-          <a className="button button-primary" href="#capabilities">
-            See Capabilities
+          <a className="button button-primary" href="#onboarding">
+            Start Onboarding
           </a>
-          <a className="button button-secondary" href="#agents">
-            View Agent System
+          <a className="button button-secondary" href="#pilot">
+            See Public Pilot
           </a>
         </div>
 

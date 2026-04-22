@@ -1,33 +1,4 @@
-const linkGroups = [
-  {
-    title: "Platform",
-    links: [
-      { label: "Capabilities", href: "#capabilities" },
-      { label: "Workflow", href: "#workflow" },
-      { label: "Engine", href: "#engine" },
-      { label: "Agent System", href: "#agents" },
-      { label: "Readiness", href: "#scoring" },
-    ],
-  },
-  {
-    title: "Solutions",
-    links: [
-      { label: "Customer Support AI", href: "#use-cases" },
-      { label: "Internal Knowledge AI", href: "#use-cases" },
-      { label: "Domain-Specific Assistants", href: "#use-cases" },
-      { label: "Enterprise Rollout Paths", href: "#use-cases" },
-    ],
-  },
-  {
-    title: "Approach",
-    links: [
-      { label: "Customized Integration", href: "#top" },
-      { label: "Specialist Agents", href: "#agents" },
-      { label: "Knowledge Operations", href: "#engine" },
-      { label: "Operational Readiness", href: "#scoring" },
-    ],
-  },
-];
+import { catalogGroups } from "../lib/onboarding";
 
 export default function Footer() {
   return (
@@ -36,25 +7,23 @@ export default function Footer() {
         <div className="footer-brand">
           <div className="brand-mark">OnboardAI</div>
           <p className="footer-copy">
-            Customized AI integration for small to mid-sized companies, with a
-            stronger path toward enterprise-grade delivery, governance, and
-            operational support.
+            OnboardAI turns intake answers, public and private source material,
+            and llm-kb-aligned delivery roles into a professional onboarding
+            packet for real AI rollouts.
           </p>
         </div>
 
-        {linkGroups.map((group) => (
+        {catalogGroups.map((group) => (
           <div key={group.title}>
             <p className="footer-title">{group.title}</p>
             <div className="footer-link-list">
-              {group.links.map((link) => (
+              {group.items.map((item) => (
                 <a
-                  key={link.label}
+                  key={item.id}
                   className="footer-link"
-                  href={link.href}
-                  target={link.href.startsWith("http") ? "_blank" : undefined}
-                  rel={link.href.startsWith("http") ? "noreferrer" : undefined}
+                  href={`#${item.id}`}
                 >
-                  {link.label}
+                  {item.label}
                 </a>
               ))}
             </div>
@@ -64,7 +33,7 @@ export default function Footer() {
 
       <div className="footer-bar">
         <span>{new Date().getFullYear()} OnboardAI</span>
-        <span>Built around llm-kb, agent orchestration, and measurable AI delivery</span>
+        <span>Working onboarding intake, llm-kb agent mapping, and public-source pilot design</span>
       </div>
     </footer>
   );
