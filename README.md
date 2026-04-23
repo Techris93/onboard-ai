@@ -74,6 +74,7 @@ Available routes:
 
 What the worker does:
 - stores each onboarding run locally under `state/onboarding_api/`
+- creates a writable llm-kb workspace under `state/llm_kb_workspace/` unless `LLM_KB_ROOT` is set
 - writes a normalized intake packet and onboarding brief
 - runs `llm-kb` sync, compile, agent recommendation, activation brief creation, filing, and publish-safe artifact generation when `llm-kb` is installed locally
 - returns the stored run, command summaries, warnings, and artifact previews to the website

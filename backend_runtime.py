@@ -21,6 +21,9 @@ from typing import Any, Dict, List
 
 REPO_DIR = Path(__file__).resolve().parent
 STATE_DIR = REPO_DIR / "state" / "onboarding_api"
+LLM_KB_WORKSPACE = Path(
+    os.environ.get("LLM_KB_ROOT", str(REPO_DIR / "state" / "llm_kb_workspace"))
+).expanduser()
 DEFAULT_LLM_KB_BIN = Path(
     os.environ.get("LLM_KB_BIN", "/Users/chrixchange/llm-knowledge-base/llm-kb")
 ).expanduser()
@@ -89,6 +92,28 @@ class CommandRecord:
 def ensure_dir(path: Path) -> Path:
     path.mkdir(parents=True, exist_ok=True)
     return path
+
+
+def ensure_llm_kb_workspace() -> Path:
+    workspace = ensure_dir(LLM_KB_WORKSPACE)
+    for rel in [
+        "config",
+        "raw",
+        "wiki/projects",
+        "wiki/sources",
+        "wiki/concepts",
+        "wiki/indexes",
+        "wiki/agents",
+        "outputs/onboardai",
+        "state",
+    ]:
+        ensure_dir(workspace / rel)
+
+    sources_config = workspace / "config" / "sources.toml"
+    if not sources_config.exists():
+        sources_config.write_text("[projects]\n", encoding="utf-8")
+
+    return workspace
 
 
 def slugify(value: str) -> str:
@@ -327,9 +352,12 @@ TOP_LEVEL_OUTPUT_KEYS = {
 
 def run_llm_kb_command(step: str, args: List[str], cwd: Path) -> CommandRecord:
     command = [str(DEFAULT_LLM_KB_BIN), *args]
+    env = os.environ.copy()
+    env["LLM_KB_ROOT"] = str(cwd)
     completed = subprocess.run(
         command,
         cwd=cwd,
+        env=env,
         capture_output=True,
         text=True,
     )
@@ -383,10 +411,11 @@ def parse_agent_names(stdout: str) -> List[str]:
 
 
 def llm_kb_status() -> Dict[str, Any]:
+    workspace = ensure_llm_kb_workspace()
     return {
         "available": DEFAULT_LLM_KB_BIN.exists(),
         "binary": str(DEFAULT_LLM_KB_BIN),
-        "root": str(DEFAULT_LLM_KB_BIN.resolve().parent) if DEFAULT_LLM_KB_BIN.exists() else "",
+        "root": str(workspace),
     }
 
 
