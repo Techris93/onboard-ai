@@ -26,11 +26,15 @@ python prepare.py
 # 4. Run baseline evaluation
 python evaluate.py --verbose
 
+# or run fully offline without Gemini
+python evaluate.py --provider local --verbose
+
 # 5. Point your AI agent at program.md to start optimizing
 ```
 
 `evaluate.py` now retries transient Gemini `429` and `503` failures with
 backoff, so benchmark runs are less likely to fail on short-lived API issues.
+It also supports `--provider local` for a model-free offline benchmark path.
 
 ## Private Public-Data Validation
 
@@ -44,14 +48,52 @@ python validate_public_company.py \
   --url https://acme.com \
   --url https://acme.com/docs \
   --url https://acme.com/pricing \
+  --provider local \
   --num-qa 12 \
   --verbose-eval
 ```
 
 Notes:
 - The runner copies the Python harness into an isolated temp workspace.
+- `--provider local` is the default, so you can run a full benchmark without Gemini.
 - Use `--depth` and `--max-pages` only when you want the scraper to crawl beyond the exact URLs you listed.
 - Use `--cleanup` if you want the temp workspace deleted after a successful run.
+
+## Backend Worker
+
+The repo now includes a real onboarding API:
+
+```bash
+python backend_api.py --host 127.0.0.1 --port 8787
+```
+
+Available routes:
+- `GET /api/health`
+- `GET /api/runs/<run_id>`
+- `POST /api/onboarding`
+
+What the worker does:
+- stores each onboarding run locally under `state/onboarding_api/`
+- writes a normalized intake packet and onboarding brief
+- runs `llm-kb` sync, compile, agent recommendation, activation brief creation, filing, and publish-safe artifact generation when `llm-kb` is installed locally
+- returns the stored run, command summaries, warnings, and artifact previews to the website
+
+## Frontend To Backend Wiring
+
+The onboarding form in `app/` can now POST directly to the backend worker.
+
+Local development:
+
+```bash
+python backend_api.py --host 127.0.0.1 --port 8787
+cd app
+VITE_API_BASE_URL=http://127.0.0.1:8787 npm run dev
+```
+
+Deployment options:
+- Same-origin deployment: serve the frontend and backend behind one domain and let the app use `/api/onboarding`.
+- Configured API deployment: build the frontend with `VITE_API_BASE_URL=https://your-api.example.com`.
+- Runtime injection: set `window.__ONBOARDAI_API_BASE_URL__` before the app boots if you need to swap API targets without rebuilding.
 
 ## Frontend
 
@@ -118,6 +160,8 @@ Edit `data/knowledge.json` with your business info and `data/test_qa.json` with 
 prepare.py   — Load/generate business data (DO NOT MODIFY)
 config.py    — AI configuration (AGENT MODIFIES THIS)
 evaluate.py  — Scoring engine with retry-aware Gemini evaluation
+backend_runtime.py  — Run storage, llm-kb orchestration, and artifact packaging
+backend_api.py  — HTTP API for live onboarding intake execution
 validate_public_company.py  — Private temp-workspace public-data validation
 program.md   — Agent instructions
 app/         — React/Vite frontend for the project homepage

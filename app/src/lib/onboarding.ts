@@ -325,7 +325,7 @@ function labelForScore(score: number) {
 }
 
 function buildAgentList(profile: OnboardingProfile) {
-  const agents = ["Software Architect", "Technical Writer"];
+  const agents = ["Technical Writer"];
 
   if (
     profile.useCase === "customer-support" ||
@@ -342,7 +342,19 @@ function buildAgentList(profile: OnboardingProfile) {
     agents.push("AI Engineer", "Backend Architect");
   }
 
-  if (profile.compliance.length > 0 || profile.stage === "production") {
+  if (
+    profile.sources.includes("resources-api-reference") ||
+    profile.integrationMode !== "advisory"
+  ) {
+    agents.push("Backend Architect");
+  }
+
+  if (
+    profile.compliance.length > 0 ||
+    profile.stage === "production" ||
+    profile.sources.includes("product-security") ||
+    profile.sources.includes("company-legal")
+  ) {
     agents.push("Security Engineer", "Code Reviewer");
   }
 
@@ -394,7 +406,7 @@ function buildIntegrationSteps(profile: OnboardingProfile) {
   }
 
   return [
-    "The website posts onboarding answers to an intake API and stores the project scope.",
+    "The website posts onboarding answers to /api/onboarding and stores the project scope.",
     "A worker runs llm-kb knowledge compilation, agent recommendation, synthesis, and packaging against the approved sources.",
     "The platform stores the resulting brief, review outputs, and release-ready artifacts for launch and support teams.",
   ];

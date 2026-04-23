@@ -8,14 +8,14 @@ const integrationCards = [
       "The frontend collects company context, desired source surfaces, rollout stage, governance needs, and target delivery systems.",
   },
   {
-    title: "2. llm-kb runs behind the scenes",
+    title: "2. /api/onboarding receives the packet",
     body:
-      "A backend worker or local bridge turns that intake into project memory, source compilation, agent recommendations, briefs, and publish-safe outputs.",
+      "When a backend worker is attached, the site posts the intake to /api/onboarding, where llm-kb can run, artifacts are stored, and a run record is returned to the UI.",
   },
   {
     title: "3. Results return to the operator view",
     body:
-      "The site can display the onboarding packet, launch checklist, review notes, and support guidance without exposing raw CLI details to buyers.",
+      "The site can display stored onboarding packets, artifact previews, launch notes, and agent recommendations without exposing raw CLI details to buyers.",
   },
 ];
 
@@ -23,17 +23,17 @@ const operatingModes = [
   {
     title: "Static pilot mode",
     body:
-      "Useful on GitHub Pages today: capture the onboarding intake, generate the brief, and validate the workflow before adding live execution.",
+      "Useful on GitHub Pages today: capture the intake, keep the readiness preview, and validate the workflow even before a live worker is attached.",
   },
   {
     title: "Backend worker mode",
     body:
-      "Best for production: the website posts the intake to an API, a worker runs llm-kb and the evaluation stack, and results are stored for the team.",
+      "Best for production: the website posts the intake to a live API, a worker runs llm-kb and the evaluation stack, and the stored results come back into the interface.",
   },
   {
     title: "Local bridge mode",
     body:
-      "Useful for private or local-first delivery: an operator or desktop helper runs llm-kb locally, then publishes the resulting artifacts back to the website.",
+      "Useful for private or local-first delivery: the same API contract points at a local worker, which lets an operator run llm-kb nearby and still feed the site real artifacts.",
   },
 ];
 

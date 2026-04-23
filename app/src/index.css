@@ -206,6 +206,12 @@ code {
   transform: translateY(-1px);
 }
 
+.button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
+}
+
 .button-primary {
   background: linear-gradient(135deg, #d8a36d 0%, #e2bf94 100%);
   color: #07101f;
@@ -311,6 +317,10 @@ code {
   margin-top: 1.5rem;
   padding-top: 1.4rem;
   border-top: 1px solid rgba(245, 239, 231, 0.08);
+}
+
+.onboarding-submit-block {
+  margin-top: 1.8rem;
 }
 
 .field-label,
@@ -464,6 +474,95 @@ code {
 
 .summary-source-pill {
   padding: 0.75rem 0.92rem;
+}
+
+.submission-note,
+.command-summary-copy,
+.artifact-preview {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.submission-note {
+  margin: 0.9rem 0 0;
+}
+
+.execution-banner {
+  padding: 0.95rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(245, 239, 231, 0.08);
+  background: rgba(245, 239, 231, 0.03);
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.execution-banner.is-submitting {
+  border-color: rgba(111, 198, 255, 0.38);
+  background: rgba(111, 198, 255, 0.08);
+}
+
+.execution-banner.is-success {
+  border-color: rgba(118, 214, 169, 0.35);
+  background: rgba(118, 214, 169, 0.08);
+}
+
+.execution-banner.is-error {
+  border-color: rgba(255, 139, 139, 0.35);
+  background: rgba(255, 139, 139, 0.08);
+}
+
+.command-item,
+.artifact-item {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.command-summary-row,
+.artifact-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.status-pill,
+.artifact-kind {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.8rem;
+  padding: 0.32rem 0.65rem;
+  border-radius: 999px;
+  font-family: var(--mono-font);
+  font-size: 0.69rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.status-pill {
+  border: 1px solid rgba(245, 239, 231, 0.1);
+  background: rgba(245, 239, 231, 0.04);
+  color: var(--text);
+}
+
+.status-pill.is-success {
+  border-color: rgba(118, 214, 169, 0.4);
+  background: rgba(118, 214, 169, 0.08);
+}
+
+.status-pill.is-error {
+  border-color: rgba(255, 139, 139, 0.4);
+  background: rgba(255, 139, 139, 0.08);
+}
+
+.artifact-kind {
+  border: 1px solid rgba(216, 163, 109, 0.24);
+  background: rgba(216, 163, 109, 0.08);
+  color: var(--accent);
+}
+
+.artifact-preview {
+  margin: 0;
+  white-space: pre-wrap;
 }
 
 .directory-stack {

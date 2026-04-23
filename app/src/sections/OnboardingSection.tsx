@@ -1,5 +1,10 @@
-import { useRef, useState } from "react";
+import { type FormEvent, useRef, useState } from "react";
 import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
+import {
+  getConfiguredApiBaseUrl,
+  submitOnboarding,
+  type BackendOnboardingResponse,
+} from "../lib/api";
 import {
   allCatalogItems,
   buildOnboardingResult,
@@ -9,14 +14,13 @@ import {
   defaultOnboardingProfile,
   deliverySystems,
   industries,
-  integrationModes,
-  rolloutStages,
   type DeliverySystem,
   type OnboardingProfile,
   type RolloutStage,
   type IntegrationMode,
   type UseCase,
   type CompanySize,
+  rolloutStages,
   useCaseOptions,
 } from "../lib/onboarding";
 
@@ -26,13 +30,49 @@ function toggleValue(values: string[], value: string) {
     : [...values, value];
 }
 
+function backendStatusText(
+  state: "idle" | "submitting" | "success" | "error",
+  result: BackendOnboardingResponse | null,
+  apiBaseUrl: string,
+) {
+  if (state === "submitting") {
+    return "Live onboarding worker is running this intake now.";
+  }
+
+  if (state === "success" && result) {
+    return `Stored run ${result.runId} completed in ${result.status} mode.`;
+  }
+
+  if (state === "error") {
+    return "The live worker did not complete this request, so the page stayed on the planning preview.";
+  }
+
+  if (apiBaseUrl) {
+    return "This build is configured for live backend onboarding.";
+  }
+
+  return "This deployment keeps live backend execution optional until a worker is attached.";
+}
+
 export default function OnboardingSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [profile, setProfile] = useState(defaultOnboardingProfile);
+  const [submissionState, setSubmissionState] = useState<
+    "idle" | "submitting" | "success" | "error"
+  >("idle");
+  const [backendResult, setBackendResult] =
+    useState<BackendOnboardingResponse | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useRevealOnScroll(sectionRef);
 
   const result = buildOnboardingResult(profile);
+  const apiBaseUrl = getConfiguredApiBaseUrl();
+  const agentList =
+    backendResult?.recommendedAgents.length &&
+    backendResult.recommendedAgents.length > 0
+      ? backendResult.recommendedAgents
+      : result.agents;
 
   const setField = <K extends keyof OnboardingProfile>(
     key: K,
@@ -56,6 +96,25 @@ export default function OnboardingSection() {
     setField("systems", toggleValue(profile.systems, value) as DeliverySystem[]);
   };
 
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmissionState("submitting");
+    setErrorMessage("");
+
+    try {
+      const response = await submitOnboarding(profile);
+      setBackendResult(response);
+      setSubmissionState("success");
+    } catch (error) {
+      setSubmissionState("error");
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "The backend onboarding worker could not complete this request.",
+      );
+    }
+  };
+
   return (
     <section
       id="onboarding"
@@ -68,16 +127,15 @@ export default function OnboardingSection() {
           Collect the real inputs before you promise a real AI rollout.
         </h2>
         <p className="section-copy reveal">
-          This intake turns company context, source selection, delivery scope,
-          and governance needs into a launch-ready onboarding packet. The
-          website can do the intake today, and the same packet can drive a live
-          llm-kb workflow through a backend worker or local bridge.
+          This intake still gives you a live readiness preview on the page, but
+          it can now also send the packet into a backend worker that stores the
+          run, routes through llm-kb, and returns publish-safe artifacts.
         </p>
 
         <div className="onboarding-layout">
           <form
             className="glass-card onboarding-panel reveal"
-            onSubmit={(event) => event.preventDefault()}
+            onSubmit={handleSubmit}
           >
             <div className="form-grid">
               <label className="field">
@@ -168,7 +226,11 @@ export default function OnboardingSection() {
                     )
                   }
                 >
-                  {integrationModes.map((option) => (
+                  {[
+                    { value: "advisory", label: "Advisory planning" },
+                    { value: "backend-worker", label: "Backend worker" },
+                    { value: "local-bridge", label: "Local bridge" },
+                  ].map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
@@ -252,6 +314,29 @@ export default function OnboardingSection() {
                 })}
               </div>
             </div>
+
+            <div className="field-block onboarding-submit-block">
+              <div className="field-label">Activation</div>
+              <p className="field-copy">
+                The page keeps the static pilot preview, and this button can
+                also push the intake into a live worker when a backend is
+                attached for the deployment.
+              </p>
+              <div className="button-row onboarding-actions">
+                <button
+                  className="button button-primary"
+                  type="submit"
+                  disabled={submissionState === "submitting"}
+                >
+                  {submissionState === "submitting"
+                    ? "Running backend workflow..."
+                    : "Run backend onboarding"}
+                </button>
+              </div>
+              <p className="submission-note">
+                {backendStatusText(submissionState, backendResult, apiBaseUrl)}
+              </p>
+            </div>
           </form>
 
           <aside className="glass-card onboarding-summary reveal">
@@ -263,7 +348,9 @@ export default function OnboardingSection() {
               <div className="summary-label">{result.label}</div>
             </div>
 
-            <p className="card-copy onboarding-summary-copy">{result.summary}</p>
+            <p className="card-copy onboarding-summary-copy">
+              {backendResult?.summary ?? result.summary}
+            </p>
 
             <div className="summary-metric-grid">
               <div className="summary-metric-card">
@@ -298,7 +385,7 @@ export default function OnboardingSection() {
             <div className="summary-block">
               <p className="footer-title">Recommended llm-kb agent roles</p>
               <div className="agent-pill-group">
-                {result.agents.map((agent) => (
+                {agentList.map((agent) => (
                   <span key={agent} className="agent-pill">
                     {agent}
                   </span>
@@ -316,6 +403,71 @@ export default function OnboardingSection() {
                 ))}
               </div>
             </div>
+
+            <div className="summary-block">
+              <p className="footer-title">Backend execution</p>
+              <div className={`execution-banner is-${submissionState}`}>
+                {backendStatusText(submissionState, backendResult, apiBaseUrl)}
+              </div>
+
+              {errorMessage ? (
+                <div className="summary-list">
+                  <div className="summary-list-item">{errorMessage}</div>
+                </div>
+              ) : null}
+
+              {backendResult?.warnings.length ? (
+                <div className="summary-list">
+                  {backendResult.warnings.map((warning) => (
+                    <div key={warning} className="summary-list-item">
+                      {warning}
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+
+              {backendResult?.commandResults.length ? (
+                <div className="summary-list">
+                  {backendResult.commandResults.map((item) => (
+                    <div key={item.step} className="summary-list-item command-item">
+                      <div className="command-summary-row">
+                        <strong>{item.step}</strong>
+                        <span
+                          className={`status-pill${
+                            item.ok ? " is-success" : " is-error"
+                          }`}
+                        >
+                          {item.ok ? "Completed" : "Needs attention"}
+                        </span>
+                      </div>
+                      <div className="command-summary-copy">{item.summary}</div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+
+            {backendResult?.artifacts.length ? (
+              <div className="summary-block">
+                <p className="footer-title">Returned artifacts</p>
+                <div className="summary-list">
+                  {backendResult.artifacts.slice(0, 4).map((artifact) => (
+                    <div
+                      key={`${artifact.kind}-${artifact.label}`}
+                      className="summary-list-item artifact-item"
+                    >
+                      <div className="artifact-header">
+                        <strong>{artifact.label}</strong>
+                        <span className="artifact-kind">{artifact.kind}</span>
+                      </div>
+                      {artifact.preview ? (
+                        <p className="artifact-preview">{artifact.preview}</p>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
 
             <div className="summary-block">
               <p className="footer-title">Selected surfaces</p>

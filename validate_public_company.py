@@ -10,6 +10,7 @@ Example:
         --url https://acme.com \
         --url https://acme.com/docs \
         --url https://acme.com/pricing \
+        --provider local \
         --num-qa 12 \
         --verbose-eval
 """
@@ -78,6 +79,7 @@ def write_manifest(workspace: Path, args: argparse.Namespace) -> None:
         "depth": args.depth,
         "max_pages": args.max_pages,
         "num_qa": args.num_qa,
+        "provider": args.provider,
         "max_retries": args.max_retries,
         "retry_base_delay": args.retry_base_delay,
         "created_at": datetime.now().isoformat(),
@@ -135,6 +137,8 @@ def build_commands(args: argparse.Namespace) -> List[List[str]]:
     evaluate_command = [
         sys.executable,
         "evaluate.py",
+        "--provider",
+        args.provider,
         "--max-retries",
         str(args.max_retries),
         "--retry-base-delay",
@@ -163,6 +167,9 @@ def parse_args() -> argparse.Namespace:
                         help="Harvest page cap per URL (default: 1)")
     parser.add_argument("--num-qa", type=int, default=12,
                         help="Number of generated Q&A pairs (default: 12)")
+    parser.add_argument("--provider", choices=["gemini", "local"],
+                        default="local",
+                        help="Evaluation provider for the benchmark run (default: local)")
     parser.add_argument("--max-retries", type=int, default=4,
                         help="Total Gemini attempts per evaluation question")
     parser.add_argument("--retry-base-delay", type=float, default=2.0,
