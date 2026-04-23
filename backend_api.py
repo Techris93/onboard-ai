@@ -16,6 +16,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
 from backend_runtime import llm_kb_status, load_run, run_onboarding
+from research_runtime import load_research_run, research_health, run_research_evaluation
 
 
 def _allowed_origins() -> str:
@@ -65,11 +66,24 @@ class OnboardingApiHandler(BaseHTTPRequestHandler):
             self._send_json(200, payload)
             return
 
+        if parsed.path == "/api/research/health":
+            self._send_json(200, research_health())
+            return
+
+        if parsed.path.startswith("/api/research/runs/"):
+            run_id = parsed.path.rsplit("/", 1)[-1]
+            payload = load_research_run(run_id)
+            if payload is None:
+                self._send_json(404, {"error": f"Research run '{run_id}' was not found."})
+                return
+            self._send_json(200, payload)
+            return
+
         self._send_json(404, {"error": "Route not found."})
 
     def do_POST(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
-        if parsed.path != "/api/onboarding":
+        if parsed.path not in {"/api/onboarding", "/api/research/evaluate"}:
             self._send_json(404, {"error": "Route not found."})
             return
 
@@ -86,7 +100,10 @@ class OnboardingApiHandler(BaseHTTPRequestHandler):
             return
 
         try:
-            result = run_onboarding(payload)
+            if parsed.path == "/api/onboarding":
+                result = run_onboarding(payload)
+            else:
+                result = run_research_evaluation(payload)
         except Exception as exc:  # noqa: BLE001
             self._send_json(500, {"error": str(exc)})
             return
