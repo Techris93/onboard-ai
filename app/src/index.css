@@ -259,7 +259,7 @@ code {
 
 .hero-proof-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
   gap: 0.9rem;
   margin-top: 2rem;
 }
@@ -688,12 +688,12 @@ code {
 }
 
 .process-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
   margin-top: 3rem;
 }
 
 .capability-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
   margin-top: 3rem;
 }
 

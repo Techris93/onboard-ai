@@ -17,6 +17,11 @@ const steps = [
     title: "Validate, harden, and deploy professionally",
     body: "Use the evaluation harness, evidence-based QA, and deployment automation to move from proof of concept toward enterprise-ready delivery.",
   },
+  {
+    number: "04",
+    title: "Let each onboarding path improve the next one",
+    body: "Use living path memory to mark successful routes, detect stuck users, decay stale trails, and recommend the next best step by role and confidence.",
+  },
 ];
 
 export default function ProcessSection() {
@@ -34,7 +39,8 @@ export default function ProcessSection() {
         <p className="section-copy reveal">
           OnboardAI works as a complete execution model: local knowledge
           operations, relevant llm-kb agent selection, configurable AI
-          behavior, and measurable quality before deployment.
+          behavior, living path memory, and measurable quality before
+          deployment.
         </p>
 
         <div className="process-grid">

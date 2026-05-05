@@ -79,3 +79,13 @@ python prepare.py --import-docs path/to/your/docs/
 ```
 
 Then run the optimization loop until the AI knows your business.
+
+## Living Onboarding Path Signals
+
+When the website workflow is used, the onboarding layer now also tracks nature-inspired path quality:
+
+- Mark a path **successful** when the route helped a user complete onboarding.
+- Mark a path **stuck** when the user stalled, asked repeated clarification questions, or lost confidence.
+- Use the Living Onboarding Path panel to review confusion risk, trail confidence, micro-questions, next best action, and adaptive training tone.
+
+These signals copy immune response, ant trails, mycelium routing, flocking alignment, predator-prey simulations, skin-style progressive access, circadian timing, tree-root prioritization, echolocation micro-questions, and octopus-style tone adaptation. They do not replace `evaluate.py`; they guide the human onboarding route around the optimized assistant.

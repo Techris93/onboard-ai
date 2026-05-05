@@ -79,6 +79,31 @@ What the worker does:
 - runs `llm-kb` sync, compile, agent recommendation, activation brief creation, filing, and publish-safe artifact generation when `llm-kb` is installed locally
 - returns the stored run, command summaries, warnings, and artifact previews to the website
 
+## Living Onboarding Paths
+
+OnboardAI now includes nature-inspired onboarding intelligence. The app no
+longer treats onboarding as a static checklist; each completed or stuck path
+updates local trail memory so the next user can be routed with better timing,
+confidence, and context.
+
+Implemented models:
+- **Immune system** detects confusion risk and recommends early intervention.
+- **Ant colonies** leave decaying trail confidence from successful onboarding paths.
+- **Mycelium networks** route the right docs, tasks, and agent roles to the person who needs them.
+- **Flocking birds** keep team onboarding aligned through lightweight local signals.
+- **Predator-prey cycles** simulate where a user is likely to get stuck before the real handoff.
+- **Skin** applies progressive access so tools and features unlock in safer layers.
+- **Circadian rhythm** recommends guidance timing based on receptivity.
+- **Tree roots** prioritize the onboarding steps that matter most for the role.
+- **Echolocation** asks short micro-questions to locate confusion quickly.
+- **Octopus camouflage** adapts UI/training tone to role, confidence, and motivation style.
+
+How to use it:
+1. Open the frontend and start an onboarding run.
+2. Complete the company profile, source selection, integration mode, and role context.
+3. Review the **Living Onboarding Path** panel for trail confidence, confusion risk, and the next best action.
+4. Click **Mark successful** when a path worked or **Mark stuck** when the user stalled. Those signals update the local trail memory for future recommendations.
+
 ## Frontend To Backend Wiring
 
 The onboarding form in `app/` can now POST directly to the backend worker.
@@ -95,6 +120,17 @@ Deployment options:
 - Same-origin deployment: serve the frontend and backend behind one domain and let the app use `/api/onboarding`.
 - Configured API deployment: build the frontend with `VITE_API_BASE_URL=https://your-api.example.com`.
 - Runtime injection: set `window.__ONBOARDAI_API_BASE_URL__` before the app boots if you need to swap API targets without rebuilding.
+
+### Render
+
+The checked-in `render.yaml` and `scripts/render_build.sh` install this repo's declared Python and frontend dependencies, then build the Vite app. The `llm-knowledge-base` repository is now public, so Render no longer needs GitHub credentials to clone it. The backend still treats the `llm-kb` binary as optional via `LLM_KB_BIN`, which keeps deploys healthy even when `llm-kb` is not installed in the image.
+
+Recommended Render setup:
+- Use the checked-in `render.yaml` Blueprint.
+- Set `VITE_API_BASE_URL` on the static site to the backend service URL when the services are split.
+- Set `INSTALL_LLM_KB=true` if you want Render to install the public `Techris93/llm-knowledge-base` repo during the build.
+- Set `LLM_KB_BIN` only if you provide a custom `llm-kb` executable path in the runtime image.
+- Keep `LLM_KB_ROOT=/opt/render/project/src/state/llm_kb_workspace` for a writable knowledge workspace.
 
 ## Frontend
 

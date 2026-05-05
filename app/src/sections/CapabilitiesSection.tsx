@@ -21,6 +21,15 @@ const capabilities = [
     ],
   },
   {
+    title: "Living onboarding paths from biological systems",
+    body: "OnboardAI copies nature's adaptive operating systems so each onboarding journey senses confusion, remembers what worked, and routes the next person better.",
+    points: [
+      "Immune-style confusion detection, early intervention, and progressive access barriers",
+      "Ant-trail confidence memory that strengthens successful paths and decays stale ones",
+      "Echolocation micro-questions and adaptive coaching tone for role, confidence, and motivation",
+    ],
+  },
+  {
     title: "Professional delivery with specialist agents",
     body: "Relevant llm-kb agent workflows can recommend and activate specialist roles for frontend polish, AI engineering, backend architecture, security hardening, DevOps automation, QA, compliance, and support.",
     points: [

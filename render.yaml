@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: onboard-ai-api
+    runtime: python
+    plan: free
+    buildCommand: ./scripts/render_build.sh
+    startCommand: python backend_api.py --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: LLM_KB_ROOT
+        value: /opt/render/project/src/state/llm_kb_workspace
+      - key: INSTALL_LLM_KB
+        value: "false"
