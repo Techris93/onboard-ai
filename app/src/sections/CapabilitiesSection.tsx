@@ -21,12 +21,12 @@ const capabilities = [
     ],
   },
   {
-    title: "Living onboarding paths from biological systems",
-    body: "OnboardAI copies nature's adaptive operating systems so each onboarding journey senses confusion, remembers what worked, and routes the next person better.",
+    title: "Adaptive onboarding paths",
+    body: "OnboardAI turns each onboarding journey into reusable path intelligence so the next user gets better timing, context, and intervention.",
     points: [
-      "Immune-style confusion detection, early intervention, and progressive access barriers",
-      "Ant-trail confidence memory that strengthens successful paths and decays stale ones",
-      "Echolocation micro-questions and adaptive coaching tone for role, confidence, and motivation",
+      "Confusion detection, early intervention, and progressive access controls",
+      "Path confidence memory that strengthens successful routes and ages out stale ones",
+      "Micro-questions and adaptive coaching tone for role, confidence, and motivation",
     ],
   },
   {

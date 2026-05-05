@@ -43,24 +43,24 @@ export type OnboardingProfile = {
   systems: DeliverySystem[];
 };
 
-export type TrailOutcome = "success" | "stuck";
+export type PathOutcome = "success" | "stuck";
 
-export type TrailMemory = {
+export type PathMemory = {
   successes: Record<string, number>;
   stuck: Record<string, number>;
   updatedAt?: string;
 };
 
-export type LivingPathSignal = {
+export type AdaptivePathSignal = {
   model: string;
   label: string;
   action: string;
   priority: "watch" | "guide" | "route" | "adapt";
 };
 
-export type LivingOnboardingPath = {
+export type AdaptiveOnboardingPath = {
   pathKey: string;
-  trailStrength: number;
+  pathConfidence: number;
   confusionRisk: number;
   recommendedRole: string;
   receptiveWindow: string;
@@ -70,7 +70,7 @@ export type LivingOnboardingPath = {
   microQuestions: string[];
   cohortSignals: string[];
   simulation: string;
-  signals: LivingPathSignal[];
+  signals: AdaptivePathSignal[];
 };
 
 export const catalogGroups: CatalogGroup[] = [
@@ -285,7 +285,7 @@ export const defaultOnboardingProfile: OnboardingProfile = {
   systems: ["website", "help-center", "support-desk"],
 };
 
-export const defaultTrailMemory: TrailMemory = {
+export const defaultPathMemory: PathMemory = {
   successes: {},
   stuck: {},
 };
@@ -305,7 +305,7 @@ export type OnboardingResult = {
   deliverables: string[];
   agents: string[];
   integrationSteps: string[];
-  livingPath: LivingOnboardingPath;
+  adaptivePath: AdaptiveOnboardingPath;
 };
 
 function unique<T>(values: T[]) {
@@ -316,7 +316,7 @@ function clamp(value: number, min = 0, max = 100) {
   return Math.max(min, Math.min(max, Math.round(value)));
 }
 
-export function profileTrailKey(profile: OnboardingProfile) {
+export function profilePathKey(profile: OnboardingProfile) {
   return [
     profile.useCase,
     profile.companySize,
@@ -325,12 +325,12 @@ export function profileTrailKey(profile: OnboardingProfile) {
   ].join(":");
 }
 
-export function evolveTrailMemory(
-  memory: TrailMemory,
+export function evolvePathMemory(
+  memory: PathMemory,
   profile: OnboardingProfile,
-  outcome: TrailOutcome,
-): TrailMemory {
-  const pathKey = profileTrailKey(profile);
+  outcome: PathOutcome,
+): PathMemory {
+  const pathKey = profilePathKey(profile);
   const successes = { ...memory.successes };
   const stuck = { ...memory.stuck };
 
@@ -527,15 +527,15 @@ function adaptiveToneFor(profile: OnboardingProfile) {
   return "Calm, practical, and role-specific";
 }
 
-function buildLivingPath(
+function buildAdaptivePath(
   profile: OnboardingProfile,
   selectedSources: CatalogItem[],
   metrics: ScoreBreakdown,
-  trailMemory: TrailMemory,
-): LivingOnboardingPath {
-  const pathKey = profileTrailKey(profile);
-  const successes = trailMemory.successes[pathKey] ?? 0;
-  const stuck = trailMemory.stuck[pathKey] ?? 0;
+  pathMemory: PathMemory,
+): AdaptiveOnboardingPath {
+  const pathKey = profilePathKey(profile);
+  const successes = pathMemory.successes[pathKey] ?? 0;
+  const stuck = pathMemory.stuck[pathKey] ?? 0;
   const score =
     metrics.knowledge + metrics.governance + metrics.operations + metrics.activation;
   const missingDocs =
@@ -547,7 +547,7 @@ function buildLivingPath(
   const confusionRisk = clamp(
     96 - score + stuck * 9 + (missingDocs ? 14 : 0) + (missingEscalation ? 8 : 0) + governanceLoad + productionLoad,
   );
-  const trailStrength = clamp(
+  const pathConfidence = clamp(
     22 + successes * 14 + selectedSources.length * 4 + profile.systems.length * 3 - stuck * 7,
   );
   const recommendedRole = priorityRoleFor(profile);
@@ -563,7 +563,7 @@ function buildLivingPath(
 
   return {
     pathKey,
-    trailStrength,
+    pathConfidence,
     confusionRisk,
     recommendedRole,
     receptiveWindow,
@@ -591,64 +591,64 @@ function buildLivingPath(
     simulation:
       confusionRisk >= 58
         ? "Run a stuck-user simulation before launch and remove the first blocked step."
-        : "Simulate one confused user path each cycle so the next cohort gets a clearer trail.",
+        : "Simulate one confused user path each cycle so the next cohort gets a clearer route.",
     signals: [
       {
-        model: "Immune system",
+        model: "Confusion detection",
         label: "Confusion sensor",
         priority: confusionRisk >= 58 ? "guide" : "watch",
         action: `${readinessState}: watch repeated revisits, low-confidence answers, and missing-source gaps.`,
       },
       {
-        model: "Ant colonies",
-        label: "Pheromone trail",
+        model: "Path confidence",
+        label: "Route memory",
         priority: "route",
-        action: `This path has ${trailStrength}% trail strength from selected sources and local success memory.`,
+        action: `This path has ${pathConfidence}% confidence from selected sources and local success memory.`,
       },
       {
-        model: "Mycelium networks",
+        model: "Knowledge routing",
         label: "Knowledge routing",
         priority: "route",
         action: `Route the right context to ${recommendedRole.toLowerCase()} before widening access.`,
       },
       {
-        model: "Flocking birds",
+        model: "Team alignment",
         label: "Team sync",
         priority: "guide",
         action: "Keep each role moving by the same checkpoint instead of separate static checklists.",
       },
       {
-        model: "Predator-prey cycles",
+        model: "Friction simulation",
         label: "Stuck simulation",
         priority: confusionRisk >= 42 ? "adapt" : "watch",
         action: "Stress-test where users misread setup, trust, permissions, or source authority.",
       },
       {
-        model: "Skin",
+        model: "Progressive access",
         label: "Progressive access",
         priority: "guide",
         action: "Unlock deeper tools only after the brief, source QA, and governance packet are ready.",
       },
       {
-        model: "Circadian rhythm",
+        model: "Timing optimization",
         label: "Timing",
         priority: "adapt",
         action: `Send the next nudge ${receptiveWindow.toLowerCase()}.`,
       },
       {
-        model: "Tree roots",
-        label: "Priority root",
+        model: "Priority routing",
+        label: "Priority driver",
         priority: "route",
-        action: `Feed the weakest root first: ${metrics.knowledge <= metrics.governance ? "source coverage" : "governance clarity"}.`,
+        action: `Address the highest-impact blocker first: ${metrics.knowledge <= metrics.governance ? "source coverage" : "governance clarity"}.`,
       },
       {
-        model: "Echolocation",
+        model: "Micro-checks",
         label: "Micro-checks",
         priority: "guide",
         action: "Ask short readiness questions to locate confusion before a person drops out.",
       },
       {
-        model: "Octopus camouflage",
+        model: "Tone adaptation",
         label: "Adaptive tone",
         priority: "adapt",
         action: `Use a ${adaptiveTone.toLowerCase()} coaching style for this profile.`,
@@ -659,7 +659,7 @@ function buildLivingPath(
 
 export function buildOnboardingResult(
   profile: OnboardingProfile,
-  trailMemory: TrailMemory = defaultTrailMemory,
+  pathMemory: PathMemory = defaultPathMemory,
 ): OnboardingResult {
   const selectedSources = allCatalogItems.filter((item) =>
     profile.sources.includes(item.id),
@@ -671,7 +671,7 @@ export function buildOnboardingResult(
   const agents = buildAgentList(profile);
   const deliverables = buildDeliverables(profile, selectedSources, agents);
   const integrationSteps = buildIntegrationSteps(profile);
-  const livingPath = buildLivingPath(profile, selectedSources, metrics, trailMemory);
+  const adaptivePath = buildAdaptivePath(profile, selectedSources, metrics, pathMemory);
 
   return {
     score,
@@ -681,7 +681,7 @@ export function buildOnboardingResult(
     agents,
     deliverables,
     integrationSteps,
-    livingPath,
+    adaptivePath,
     summary: `${profile.companyName} can start with a ${label.toLowerCase()} built around ${selectedSources.length} selected source surfaces, ${agents.length} recommended llm-kb-aligned roles, and a ${profile.integrationMode.replaceAll("-", " ")} activation path.`,
   };
 }

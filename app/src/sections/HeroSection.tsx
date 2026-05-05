@@ -3,7 +3,7 @@ import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
 
 const heroProof = [
   "Customized AI integration for small to mid-sized companies.",
-  "Living onboarding paths that learn from success and confusion.",
+  "Adaptive onboarding paths that learn from success and friction.",
   "Relevant llm-kb agents for delivery, hardening, and support.",
   "Enterprise-grade posture for security, deployment, and governance.",
 ];
@@ -28,7 +28,7 @@ export default function HeroSection() {
 
         <p className="hero-copy reveal">
           OnboardAI combines company knowledge, llm-kb knowledge operations,
-          living onboarding paths, and relevant specialist agents to design,
+          adaptive onboarding paths, and relevant specialist agents to design,
           secure, deploy, and support AI systems that feel credible for real
           businesses and professional buyers.
         </p>

@@ -20,7 +20,7 @@ const steps = [
   {
     number: "04",
     title: "Let each onboarding path improve the next one",
-    body: "Use living path memory to mark successful routes, detect stuck users, decay stale trails, and recommend the next best step by role and confidence.",
+    body: "Use path outcome memory to mark successful routes, detect stuck users, age out stale signals, and recommend the next best step by role and confidence.",
   },
 ];
 
@@ -39,7 +39,7 @@ export default function ProcessSection() {
         <p className="section-copy reveal">
           OnboardAI works as a complete execution model: local knowledge
           operations, relevant llm-kb agent selection, configurable AI
-          behavior, living path memory, and measurable quality before
+          behavior, path outcome memory, and measurable quality before
           deployment.
         </p>
 

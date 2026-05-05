@@ -79,30 +79,29 @@ What the worker does:
 - runs `llm-kb` sync, compile, agent recommendation, activation brief creation, filing, and publish-safe artifact generation when `llm-kb` is installed locally
 - returns the stored run, command summaries, warnings, and artifact previews to the website
 
-## Living Onboarding Paths
+## Adaptive Onboarding Paths
 
-OnboardAI now includes nature-inspired onboarding intelligence. The app no
-longer treats onboarding as a static checklist; each completed or stuck path
-updates local trail memory so the next user can be routed with better timing,
-confidence, and context.
+OnboardAI no longer treats onboarding as a static checklist. Each completed or
+stalled path updates local outcome memory so the next user can be routed with
+better timing, confidence, and context.
 
-Implemented models:
-- **Immune system** detects confusion risk and recommends early intervention.
-- **Ant colonies** leave decaying trail confidence from successful onboarding paths.
-- **Mycelium networks** route the right docs, tasks, and agent roles to the person who needs them.
-- **Flocking birds** keep team onboarding aligned through lightweight local signals.
-- **Predator-prey cycles** simulate where a user is likely to get stuck before the real handoff.
-- **Skin** applies progressive access so tools and features unlock in safer layers.
-- **Circadian rhythm** recommends guidance timing based on receptivity.
-- **Tree roots** prioritize the onboarding steps that matter most for the role.
-- **Echolocation** asks short micro-questions to locate confusion quickly.
-- **Octopus camouflage** adapts UI/training tone to role, confidence, and motivation style.
+Implemented capabilities:
+- **Confusion detection** identifies risk early and recommends intervention.
+- **Path confidence memory** strengthens successful routes and ages out stale ones.
+- **Knowledge routing** sends the right docs, tasks, and agent roles to the person who needs them.
+- **Team alignment** keeps onboarding owners synced through lightweight signals.
+- **Friction simulation** identifies where a user is likely to get stuck before the real handoff.
+- **Progressive access** unlocks tools and features in safer layers.
+- **Timing optimization** recommends guidance moments based on receptivity.
+- **Priority routing** emphasizes the onboarding steps that matter most for the role.
+- **Micro-checks** ask short questions to locate confusion quickly.
+- **Tone adaptation** adjusts training style to role, confidence, and motivation.
 
 How to use it:
 1. Open the frontend and start an onboarding run.
 2. Complete the company profile, source selection, integration mode, and role context.
-3. Review the **Living Onboarding Path** panel for trail confidence, confusion risk, and the next best action.
-4. Click **Mark successful** when a path worked or **Mark stuck** when the user stalled. Those signals update the local trail memory for future recommendations.
+3. Review the **Adaptive Path Signals** panel for path confidence, confusion risk, and the next best action.
+4. Click **Mark successful** when a path worked or **Mark stuck** when the user stalled. Those signals update the local path memory for future recommendations.
 
 ## Frontend To Backend Wiring
 

@@ -12,16 +12,16 @@ import {
   companySizes,
   complianceOptions,
   defaultOnboardingProfile,
-  defaultTrailMemory,
+  defaultPathMemory,
   deliverySystems,
-  evolveTrailMemory,
+  evolvePathMemory,
   industries,
   integrationModes,
   type DeliverySystem,
   type OnboardingProfile,
   type RolloutStage,
-  type TrailMemory,
-  type TrailOutcome,
+  type PathMemory,
+  type PathOutcome,
   type IntegrationMode,
   type UseCase,
   type CompanySize,
@@ -29,7 +29,7 @@ import {
   useCaseOptions,
 } from "../lib/onboarding";
 
-const TRAIL_MEMORY_KEY = "onboard-ai:living-path-memory";
+const PATH_MEMORY_KEY = "onboard-ai:adaptive-path-memory";
 
 function toggleValue(values: string[], value: string) {
   return values.includes(value)
@@ -69,19 +69,19 @@ function isRecord(value: unknown): value is Record<string, number> {
   );
 }
 
-function loadTrailMemory(): TrailMemory {
+function loadPathMemory(): PathMemory {
   if (typeof window === "undefined") {
-    return defaultTrailMemory;
+    return defaultPathMemory;
   }
 
   try {
-    const raw = window.localStorage.getItem(TRAIL_MEMORY_KEY);
+    const raw = window.localStorage.getItem(PATH_MEMORY_KEY);
     if (!raw) {
-      return defaultTrailMemory;
+      return defaultPathMemory;
     }
-    const parsed = JSON.parse(raw) as Partial<TrailMemory>;
+    const parsed = JSON.parse(raw) as Partial<PathMemory>;
     if (!isRecord(parsed.successes) || !isRecord(parsed.stuck)) {
-      return defaultTrailMemory;
+      return defaultPathMemory;
     }
     return {
       successes: parsed.successes,
@@ -89,7 +89,7 @@ function loadTrailMemory(): TrailMemory {
       updatedAt: parsed.updatedAt,
     };
   } catch {
-    return defaultTrailMemory;
+    return defaultPathMemory;
   }
 }
 
@@ -102,18 +102,18 @@ export default function OnboardingSection() {
   const [backendResult, setBackendResult] =
     useState<BackendOnboardingResponse | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const [trailMemory, setTrailMemory] = useState<TrailMemory>(() =>
-    loadTrailMemory(),
+  const [pathMemory, setPathMemory] = useState<PathMemory>(() =>
+    loadPathMemory(),
   );
 
   useRevealOnScroll(sectionRef);
 
   useEffect(() => {
-    window.localStorage.setItem(TRAIL_MEMORY_KEY, JSON.stringify(trailMemory));
-  }, [trailMemory]);
+    window.localStorage.setItem(PATH_MEMORY_KEY, JSON.stringify(pathMemory));
+  }, [pathMemory]);
 
-  const result = buildOnboardingResult(profile, trailMemory);
-  const livingPath = result.livingPath;
+  const result = buildOnboardingResult(profile, pathMemory);
+  const adaptivePath = result.adaptivePath;
   const apiBaseUrl = getConfiguredApiBaseUrl();
   const agentList =
     backendResult?.recommendedAgents.length &&
@@ -162,8 +162,8 @@ export default function OnboardingSection() {
     }
   };
 
-  const recordTrailOutcome = (outcome: TrailOutcome) => {
-    setTrailMemory((current) => evolveTrailMemory(current, profile, outcome));
+  const recordPathOutcome = (outcome: PathOutcome) => {
+    setPathMemory((current) => evolvePathMemory(current, profile, outcome));
   };
 
   return (
@@ -419,29 +419,29 @@ export default function OnboardingSection() {
             </div>
 
             <div className="summary-block">
-              <p className="footer-title">Living path memory</p>
-              <div className="summary-metric-grid living-path-metrics">
+              <p className="footer-title">Path outcome memory</p>
+              <div className="summary-metric-grid adaptive-path-metrics">
                 <div className="summary-metric-card">
-                  <span>Trail</span>
-                  <strong>{livingPath.trailStrength}%</strong>
+                  <span>Confidence</span>
+                  <strong>{adaptivePath.pathConfidence}%</strong>
                 </div>
                 <div className="summary-metric-card">
                   <span>Stuck risk</span>
-                  <strong>{livingPath.confusionRisk}%</strong>
+                  <strong>{adaptivePath.confusionRisk}%</strong>
                 </div>
               </div>
               <div className="path-action-row">
                 <button
                   type="button"
                   className="button button-secondary path-action-button"
-                  onClick={() => recordTrailOutcome("success")}
+                  onClick={() => recordPathOutcome("success")}
                 >
                   Mark successful
                 </button>
                 <button
                   type="button"
                   className="button button-secondary path-action-button"
-                  onClick={() => recordTrailOutcome("stuck")}
+                  onClick={() => recordPathOutcome("stuck")}
                 >
                   Mark stuck
                 </button>
@@ -449,11 +449,11 @@ export default function OnboardingSection() {
             </div>
 
             <div className="summary-block">
-              <p className="footer-title">Biological path</p>
-              <div className="living-signal-list">
-                {livingPath.signals.map((signal) => (
-                  <div key={signal.model} className="living-signal-item">
-                    <div className="living-signal-head">
+              <p className="footer-title">Adaptive path signals</p>
+              <div className="adaptive-signal-list">
+                {adaptivePath.signals.map((signal) => (
+                  <div key={signal.model} className="adaptive-signal-item">
+                    <div className="adaptive-signal-head">
                       <span>{signal.model}</span>
                       <strong>{signal.label}</strong>
                     </div>
@@ -466,7 +466,7 @@ export default function OnboardingSection() {
             <div className="summary-block">
               <p className="footer-title">Route next</p>
               <div className="summary-list">
-                {livingPath.routeNow.map((step) => (
+                {adaptivePath.routeNow.map((step) => (
                   <div key={step} className="summary-list-item">
                     {step}
                   </div>
@@ -477,7 +477,7 @@ export default function OnboardingSection() {
             <div className="summary-block">
               <p className="footer-title">Micro-checks</p>
               <div className="summary-list">
-                {livingPath.microQuestions.map((question) => (
+                {adaptivePath.microQuestions.map((question) => (
                   <div key={question} className="summary-list-item">
                     {question}
                   </div>
