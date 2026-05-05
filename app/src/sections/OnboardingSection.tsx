@@ -1,4 +1,4 @@
-import { type FormEvent, useRef, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
 import {
   getConfiguredApiBaseUrl,
@@ -12,17 +12,24 @@ import {
   companySizes,
   complianceOptions,
   defaultOnboardingProfile,
+  defaultTrailMemory,
   deliverySystems,
+  evolveTrailMemory,
   industries,
+  integrationModes,
   type DeliverySystem,
   type OnboardingProfile,
   type RolloutStage,
+  type TrailMemory,
+  type TrailOutcome,
   type IntegrationMode,
   type UseCase,
   type CompanySize,
   rolloutStages,
   useCaseOptions,
 } from "../lib/onboarding";
+
+const TRAIL_MEMORY_KEY = "onboard-ai:living-path-memory";
 
 function toggleValue(values: string[], value: string) {
   return values.includes(value)
@@ -54,6 +61,38 @@ function backendStatusText(
   return "This deployment keeps live backend execution optional until a worker is attached.";
 }
 
+function isRecord(value: unknown): value is Record<string, number> {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    Object.values(value).every((item) => typeof item === "number")
+  );
+}
+
+function loadTrailMemory(): TrailMemory {
+  if (typeof window === "undefined") {
+    return defaultTrailMemory;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(TRAIL_MEMORY_KEY);
+    if (!raw) {
+      return defaultTrailMemory;
+    }
+    const parsed = JSON.parse(raw) as Partial<TrailMemory>;
+    if (!isRecord(parsed.successes) || !isRecord(parsed.stuck)) {
+      return defaultTrailMemory;
+    }
+    return {
+      successes: parsed.successes,
+      stuck: parsed.stuck,
+      updatedAt: parsed.updatedAt,
+    };
+  } catch {
+    return defaultTrailMemory;
+  }
+}
+
 export default function OnboardingSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [profile, setProfile] = useState(defaultOnboardingProfile);
@@ -63,10 +102,18 @@ export default function OnboardingSection() {
   const [backendResult, setBackendResult] =
     useState<BackendOnboardingResponse | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [trailMemory, setTrailMemory] = useState<TrailMemory>(() =>
+    loadTrailMemory(),
+  );
 
   useRevealOnScroll(sectionRef);
 
-  const result = buildOnboardingResult(profile);
+  useEffect(() => {
+    window.localStorage.setItem(TRAIL_MEMORY_KEY, JSON.stringify(trailMemory));
+  }, [trailMemory]);
+
+  const result = buildOnboardingResult(profile, trailMemory);
+  const livingPath = result.livingPath;
   const apiBaseUrl = getConfiguredApiBaseUrl();
   const agentList =
     backendResult?.recommendedAgents.length &&
@@ -113,6 +160,10 @@ export default function OnboardingSection() {
           : "The backend onboarding worker could not complete this request.",
       );
     }
+  };
+
+  const recordTrailOutcome = (outcome: TrailOutcome) => {
+    setTrailMemory((current) => evolveTrailMemory(current, profile, outcome));
   };
 
   return (
@@ -226,11 +277,7 @@ export default function OnboardingSection() {
                     )
                   }
                 >
-                  {[
-                    { value: "advisory", label: "Advisory planning" },
-                    { value: "backend-worker", label: "Backend worker" },
-                    { value: "local-bridge", label: "Local bridge" },
-                  ].map((option) => (
+                  {integrationModes.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
@@ -368,6 +415,73 @@ export default function OnboardingSection() {
               <div className="summary-metric-card">
                 <span>Activation</span>
                 <strong>{result.metrics.activation}</strong>
+              </div>
+            </div>
+
+            <div className="summary-block">
+              <p className="footer-title">Living path memory</p>
+              <div className="summary-metric-grid living-path-metrics">
+                <div className="summary-metric-card">
+                  <span>Trail</span>
+                  <strong>{livingPath.trailStrength}%</strong>
+                </div>
+                <div className="summary-metric-card">
+                  <span>Stuck risk</span>
+                  <strong>{livingPath.confusionRisk}%</strong>
+                </div>
+              </div>
+              <div className="path-action-row">
+                <button
+                  type="button"
+                  className="button button-secondary path-action-button"
+                  onClick={() => recordTrailOutcome("success")}
+                >
+                  Mark successful
+                </button>
+                <button
+                  type="button"
+                  className="button button-secondary path-action-button"
+                  onClick={() => recordTrailOutcome("stuck")}
+                >
+                  Mark stuck
+                </button>
+              </div>
+            </div>
+
+            <div className="summary-block">
+              <p className="footer-title">Biological path</p>
+              <div className="living-signal-list">
+                {livingPath.signals.map((signal) => (
+                  <div key={signal.model} className="living-signal-item">
+                    <div className="living-signal-head">
+                      <span>{signal.model}</span>
+                      <strong>{signal.label}</strong>
+                    </div>
+                    <p>{signal.action}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="summary-block">
+              <p className="footer-title">Route next</p>
+              <div className="summary-list">
+                {livingPath.routeNow.map((step) => (
+                  <div key={step} className="summary-list-item">
+                    {step}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="summary-block">
+              <p className="footer-title">Micro-checks</p>
+              <div className="summary-list">
+                {livingPath.microQuestions.map((question) => (
+                  <div key={question} className="summary-list-item">
+                    {question}
+                  </div>
+                ))}
               </div>
             </div>
 

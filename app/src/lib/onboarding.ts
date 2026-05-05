@@ -43,6 +43,36 @@ export type OnboardingProfile = {
   systems: DeliverySystem[];
 };
 
+export type TrailOutcome = "success" | "stuck";
+
+export type TrailMemory = {
+  successes: Record<string, number>;
+  stuck: Record<string, number>;
+  updatedAt?: string;
+};
+
+export type LivingPathSignal = {
+  model: string;
+  label: string;
+  action: string;
+  priority: "watch" | "guide" | "route" | "adapt";
+};
+
+export type LivingOnboardingPath = {
+  pathKey: string;
+  trailStrength: number;
+  confusionRisk: number;
+  recommendedRole: string;
+  receptiveWindow: string;
+  adaptiveTone: string;
+  progressiveAccess: string[];
+  routeNow: string[];
+  microQuestions: string[];
+  cohortSignals: string[];
+  simulation: string;
+  signals: LivingPathSignal[];
+};
+
 export const catalogGroups: CatalogGroup[] = [
   {
     id: "product",
@@ -255,6 +285,10 @@ export const defaultOnboardingProfile: OnboardingProfile = {
   systems: ["website", "help-center", "support-desk"],
 };
 
+export const defaultTrailMemory: TrailMemory = {
+  successes: {},
+  stuck: {},
+};
 type ScoreBreakdown = {
   knowledge: number;
   governance: number;
@@ -271,10 +305,46 @@ export type OnboardingResult = {
   deliverables: string[];
   agents: string[];
   integrationSteps: string[];
+  livingPath: LivingOnboardingPath;
 };
 
 function unique<T>(values: T[]) {
   return [...new Set(values)];
+}
+
+function clamp(value: number, min = 0, max = 100) {
+  return Math.max(min, Math.min(max, Math.round(value)));
+}
+
+export function profileTrailKey(profile: OnboardingProfile) {
+  return [
+    profile.useCase,
+    profile.companySize,
+    profile.stage,
+    profile.integrationMode,
+  ].join(":");
+}
+
+export function evolveTrailMemory(
+  memory: TrailMemory,
+  profile: OnboardingProfile,
+  outcome: TrailOutcome,
+): TrailMemory {
+  const pathKey = profileTrailKey(profile);
+  const successes = { ...memory.successes };
+  const stuck = { ...memory.stuck };
+
+  if (outcome === "success") {
+    successes[pathKey] = (successes[pathKey] ?? 0) + 1;
+  } else {
+    stuck[pathKey] = (stuck[pathKey] ?? 0) + 1;
+  }
+
+  return {
+    successes,
+    stuck,
+    updatedAt: new Date().toISOString(),
+  };
 }
 
 function scoreProfile(profile: OnboardingProfile): ScoreBreakdown {
@@ -412,8 +482,184 @@ function buildIntegrationSteps(profile: OnboardingProfile) {
   ];
 }
 
+function priorityRoleFor(profile: OnboardingProfile) {
+  if (profile.useCase === "product-api-assistant") {
+    return "Developer success";
+  }
+  if (profile.useCase === "customer-support") {
+    return "Support lead";
+  }
+  if (profile.useCase === "sales-enablement") {
+    return "Revenue enablement";
+  }
+  if (profile.useCase === "operations-assistant") {
+    return "Operations owner";
+  }
+  return "Internal champion";
+}
+
+function receptiveWindowFor(profile: OnboardingProfile) {
+  if (profile.useCase === "customer-support") {
+    return "Before support handoff or queue review";
+  }
+  if (profile.useCase === "product-api-assistant") {
+    return "Morning developer planning block";
+  }
+  if (profile.useCase === "sales-enablement") {
+    return "After account review and before follow-up drafting";
+  }
+  if (profile.useCase === "operations-assistant") {
+    return "During compliance or runbook review";
+  }
+  return "At the start of a focused work block";
+}
+
+function adaptiveToneFor(profile: OnboardingProfile) {
+  if (profile.stage === "production" || profile.compliance.length >= 2) {
+    return "Precise, governance-aware, and escalation-first";
+  }
+  if (profile.companySize === "smb") {
+    return "Direct, lightweight, and momentum-focused";
+  }
+  if (profile.useCase === "product-api-assistant") {
+    return "Technical, example-led, and source-cited";
+  }
+  return "Calm, practical, and role-specific";
+}
+
+function buildLivingPath(
+  profile: OnboardingProfile,
+  selectedSources: CatalogItem[],
+  metrics: ScoreBreakdown,
+  trailMemory: TrailMemory,
+): LivingOnboardingPath {
+  const pathKey = profileTrailKey(profile);
+  const successes = trailMemory.successes[pathKey] ?? 0;
+  const stuck = trailMemory.stuck[pathKey] ?? 0;
+  const score =
+    metrics.knowledge + metrics.governance + metrics.operations + metrics.activation;
+  const missingDocs =
+    !profile.sources.includes("resources-documentation") &&
+    !profile.sources.includes("resources-api-reference");
+  const missingEscalation = !profile.sources.includes("company-contact");
+  const governanceLoad = profile.compliance.length >= 2 ? 8 : 0;
+  const productionLoad = profile.stage === "production" ? 10 : profile.stage === "pilot" ? 5 : 0;
+  const confusionRisk = clamp(
+    96 - score + stuck * 9 + (missingDocs ? 14 : 0) + (missingEscalation ? 8 : 0) + governanceLoad + productionLoad,
+  );
+  const trailStrength = clamp(
+    22 + successes * 14 + selectedSources.length * 4 + profile.systems.length * 3 - stuck * 7,
+  );
+  const recommendedRole = priorityRoleFor(profile);
+  const receptiveWindow = receptiveWindowFor(profile);
+  const adaptiveTone = adaptiveToneFor(profile);
+  const sourceLabels = selectedSources.slice(0, 3).map((item) => item.label);
+  const sourceRoute =
+    sourceLabels.length > 0
+      ? sourceLabels.join(", ")
+      : "Platform, Documentation, and Contact";
+  const readinessState =
+    confusionRisk >= 58 ? "intervene now" : confusionRisk >= 36 ? "guide closely" : "continue path";
+
+  return {
+    pathKey,
+    trailStrength,
+    confusionRisk,
+    recommendedRole,
+    receptiveWindow,
+    adaptiveTone,
+    progressiveAccess: [
+      "Intake brief",
+      "Source QA packet",
+      profile.stage === "production" ? "Governed launch workspace" : "Pilot workspace",
+      "Publishing and support handoff",
+    ],
+    routeNow: [
+      `Route ${recommendedRole.toLowerCase()} through ${sourceRoute}.`,
+      `Use ${profile.systems.slice(0, 2).join(" and ") || "website"} as the first delivery surface.`,
+      `Hold governance review around ${profile.compliance.join(", ") || "baseline controls"}.`,
+    ],
+    microQuestions: [
+      "Which role must reach value first?",
+      "Which source should override every other answer?",
+      "What signal should trigger a human handoff?",
+    ],
+    cohortSignals: [
+      `Sync ${recommendedRole.toLowerCase()}, implementation, and review owners around the same packet.`,
+      `Keep a shared checkpoint when ${profile.companyName} moves from ${profile.stage} to the next stage.`,
+    ],
+    simulation:
+      confusionRisk >= 58
+        ? "Run a stuck-user simulation before launch and remove the first blocked step."
+        : "Simulate one confused user path each cycle so the next cohort gets a clearer trail.",
+    signals: [
+      {
+        model: "Immune system",
+        label: "Confusion sensor",
+        priority: confusionRisk >= 58 ? "guide" : "watch",
+        action: `${readinessState}: watch repeated revisits, low-confidence answers, and missing-source gaps.`,
+      },
+      {
+        model: "Ant colonies",
+        label: "Pheromone trail",
+        priority: "route",
+        action: `This path has ${trailStrength}% trail strength from selected sources and local success memory.`,
+      },
+      {
+        model: "Mycelium networks",
+        label: "Knowledge routing",
+        priority: "route",
+        action: `Route the right context to ${recommendedRole.toLowerCase()} before widening access.`,
+      },
+      {
+        model: "Flocking birds",
+        label: "Team sync",
+        priority: "guide",
+        action: "Keep each role moving by the same checkpoint instead of separate static checklists.",
+      },
+      {
+        model: "Predator-prey cycles",
+        label: "Stuck simulation",
+        priority: confusionRisk >= 42 ? "adapt" : "watch",
+        action: "Stress-test where users misread setup, trust, permissions, or source authority.",
+      },
+      {
+        model: "Skin",
+        label: "Progressive access",
+        priority: "guide",
+        action: "Unlock deeper tools only after the brief, source QA, and governance packet are ready.",
+      },
+      {
+        model: "Circadian rhythm",
+        label: "Timing",
+        priority: "adapt",
+        action: `Send the next nudge ${receptiveWindow.toLowerCase()}.`,
+      },
+      {
+        model: "Tree roots",
+        label: "Priority root",
+        priority: "route",
+        action: `Feed the weakest root first: ${metrics.knowledge <= metrics.governance ? "source coverage" : "governance clarity"}.`,
+      },
+      {
+        model: "Echolocation",
+        label: "Micro-checks",
+        priority: "guide",
+        action: "Ask short readiness questions to locate confusion before a person drops out.",
+      },
+      {
+        model: "Octopus camouflage",
+        label: "Adaptive tone",
+        priority: "adapt",
+        action: `Use a ${adaptiveTone.toLowerCase()} coaching style for this profile.`,
+      },
+    ],
+  };
+}
+
 export function buildOnboardingResult(
   profile: OnboardingProfile,
+  trailMemory: TrailMemory = defaultTrailMemory,
 ): OnboardingResult {
   const selectedSources = allCatalogItems.filter((item) =>
     profile.sources.includes(item.id),
@@ -425,6 +671,7 @@ export function buildOnboardingResult(
   const agents = buildAgentList(profile);
   const deliverables = buildDeliverables(profile, selectedSources, agents);
   const integrationSteps = buildIntegrationSteps(profile);
+  const livingPath = buildLivingPath(profile, selectedSources, metrics, trailMemory);
 
   return {
     score,
@@ -434,6 +681,7 @@ export function buildOnboardingResult(
     agents,
     deliverables,
     integrationSteps,
+    livingPath,
     summary: `${profile.companyName} can start with a ${label.toLowerCase()} built around ${selectedSources.length} selected source surfaces, ${agents.length} recommended llm-kb-aligned roles, and a ${profile.integrationMode.replaceAll("-", " ")} activation path.`,
   };
 }
