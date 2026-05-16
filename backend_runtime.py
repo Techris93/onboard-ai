@@ -316,9 +316,21 @@ def _sanitize_public_text(value: str) -> str:
 
 
 def _public_artifact_record(record: ArtifactRecord) -> Dict[str, Any]:
+    preview_labels = {
+        "Normalized intake",
+        "Intake packet",
+        "Fine-tuning dataset pipeline",
+        "Dataset pipeline spec",
+        "Onboarding brief",
+        "Published onboarding brief",
+        "Published dataset pipeline",
+        "Published intake packet",
+    }
     payload = asdict(record)
     payload["path"] = f"artifact://{Path(record.path).name}"
-    payload["preview"] = _sanitize_public_text(record.preview)
+    payload["preview"] = (
+        _sanitize_public_text(record.preview) if record.label in preview_labels else ""
+    )
     return payload
 
 
@@ -373,11 +385,9 @@ def _artifact_label_for_step(step: str) -> str:
 def _public_command_record(record: CommandRecord) -> Dict[str, Any]:
     payload = asdict(record)
     payload["step"] = slugify(record.label)
-    payload["stdout_preview"] = _sanitize_public_text(record.stdout_preview)
-    payload["stderr_preview"] = _sanitize_public_text(record.stderr_preview)
-    payload["parsed"] = {
-        key: _sanitize_public_text(value) for key, value in record.parsed.items()
-    }
+    payload["stdout_preview"] = ""
+    payload["stderr_preview"] = ""
+    payload["parsed"] = {}
     return payload
 
 
