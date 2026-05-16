@@ -39,11 +39,11 @@ export const publicPages = {
     title: "Documentation",
     eyebrow: "Resources",
     body:
-      "Documentation covers local development, production deployment, worker operation, provider configuration, billing setup, and security controls.",
+      "Documentation covers product operation, dashboard workflows, production deployment, worker operation, provider configuration, billing setup, and security controls.",
     points: [
-      "Run the backend API and worker locally for development.",
-      "Use Render for the API and GitHub Pages for the frontend.",
-      "Use local/offline providers before enabling paid model providers.",
+      "Use the owner guide to operate onboarding runs, artifacts, dataset batches, exports, and quality gates.",
+      "Use the Render environment guide to lock production secrets, CORS, worker access, and persistence.",
+      "Use local/offline providers to prove data quality before enabling paid model providers.",
     ],
   },
   api: {

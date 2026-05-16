@@ -31,6 +31,10 @@ marketing site:
 See [`PRODUCTION_SAAS.md`](PRODUCTION_SAAS.md) for setup, environment, worker,
 security, and production migration details.
 
+Operator guides:
+- [`USER_GUIDE.md`](USER_GUIDE.md) explains how to use every current public site, dashboard, worker, dataset, quality gate, artifact, provider, billing, API, and deployment feature.
+- [`RENDER_ENV_GUIDE.md`](RENDER_ENV_GUIDE.md) explains how to configure Render production environment variables, strong secrets, CORS, worker protection, persistent SQLite storage, and the Postgres migration path.
+
 ## Quick Start
 
 ```bash
