@@ -1,5 +1,18 @@
 import { catalogGroups } from "../lib/onboarding";
 
+const pageLinks = [
+  { label: "Dashboard", href: "./app" },
+  { label: "Pricing", href: "./pricing" },
+  { label: "Security", href: "./security" },
+  { label: "Docs", href: "./docs" },
+  { label: "API", href: "./api" },
+  { label: "Changelog", href: "./changelog" },
+  { label: "Privacy", href: "./privacy" },
+  { label: "Terms", href: "./terms" },
+  { label: "DPA", href: "./dpa" },
+  { label: "Subprocessors", href: "./subprocessors" },
+];
+
 export default function Footer() {
   return (
     <footer className="site-footer">
@@ -29,6 +42,16 @@ export default function Footer() {
             </div>
           </div>
         ))}
+        <div>
+          <p className="footer-title">SaaS</p>
+          <div className="footer-link-list">
+            {pageLinks.map((item) => (
+              <a key={item.href} className="footer-link" href={item.href}>
+                {item.label}
+              </a>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="footer-bar">

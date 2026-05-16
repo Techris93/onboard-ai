@@ -130,16 +130,16 @@ export default function Navigation() {
         <div className="nav-actions">
           <a
             className="button button-secondary nav-secondary"
-            href="#integration"
+            href="./pricing"
           >
-            Integration Model
+            Pricing
           </a>
           <a
             className="button button-primary nav-primary"
-            href="#onboarding"
+            href="./app"
             onClick={closeMenus}
           >
-            Start Onboarding
+            Open App
           </a>
           <button
             type="button"

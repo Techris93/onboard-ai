@@ -15,6 +15,22 @@ The product focuses on three connected workflows:
 - Fine-tuning dataset generation with Codex-authored specs, provider-neutral generator execution, quality gates, rejected-row tracking, and batch improvement reports.
 - Operational readiness for security, governance, deployment, support, and public-source validation before private client data is imported.
 
+## SaaS Foundation
+
+OnboardAI now includes a production SaaS foundation in addition to the public
+marketing site:
+
+- `/app` authenticated dashboard
+- SQLite-backed users, sessions, organizations, memberships, projects, jobs, artifacts, dataset pipelines, dataset batches, dataset rows, quality gates, usage events, billing customers, provider keys, API keys, and audit logs
+- durable job queue with a worker command
+- local/offline dataset row generation
+- quality gate execution and accepted-row JSONL export
+- mock billing and provider adapter interfaces ready for Stripe and external model providers
+- public pages for product, pricing, security, docs, API, blog, changelog, legal, privacy, terms, DPA, and subprocessors
+
+See [`PRODUCTION_SAAS.md`](PRODUCTION_SAAS.md) for setup, environment, worker,
+security, and production migration details.
+
 ## Quick Start
 
 ```bash
@@ -85,17 +101,33 @@ python backend_api.py --host 127.0.0.1 --port 8787
 
 Available routes:
 - `GET /api/health`
+- `GET /api/deployment/health`
+- `GET /api/app/dashboard`
 - `GET /api/runs/<run_id>`
 - `GET /api/dataset-pipeline/runs/<run_id>`
+- `GET /api/app/jobs/<job_id>`
+- `GET /api/app/artifacts/<artifact_id>`
 - `POST /api/onboarding`
 - `POST /api/dataset-pipeline/plan`
+- `POST /api/auth/signup`
+- `POST /api/auth/login`
+- `POST /api/app/onboarding-jobs`
+- `POST /api/app/dataset-batches`
+- `POST /api/app/jobs/run-next`
 
 What the worker does:
 - stores each onboarding run locally under `state/onboarding_api/`
+- stores SaaS state in SQLite at `state/onboardai.sqlite3` unless `ONBOARDAI_DB_PATH` is set
 - creates a writable llm-kb workspace under `state/llm_kb_workspace/` unless `LLM_KB_ROOT` is set
 - writes a normalized intake packet, onboarding brief, and fine-tuning dataset pipeline plan
 - uses `llm-kb` for source preparation, knowledge compilation, agent recommendation, activation brief creation, filing, and publish-safe artifact generation when it is installed locally
 - returns the stored run, command summaries, warnings, and artifact previews to the website
+
+Run the SaaS worker locally:
+
+```bash
+python saas_worker.py --once --limit 1
+```
 
 ## Adaptive Onboarding Paths
 
@@ -164,6 +196,7 @@ npm run dev
 The frontend is intentionally separate from the Python backend:
 - Root Python files drive data prep, config tuning, dataset planning, and evaluation.
 - `app/` presents the public product experience and submits approved intakes to the backend worker.
+- `app/` also contains the authenticated SaaS dashboard under `/app`.
 
 ## How It Works
 
@@ -217,6 +250,8 @@ evaluate.py           — Scoring engine with retry-aware Gemini and local evalu
 dataset_pipeline.py   — Fine-tuning dataset pipeline planning and artifacts
 backend_runtime.py    — Run storage, llm-kb orchestration, and artifact packaging
 backend_api.py        — HTTP API for live onboarding and research execution
+saas_runtime.py       — Auth, tenancy, jobs, dataset rows, quality gates, billing/provider foundations
+saas_worker.py        — Background worker for queued SaaS jobs
 validate_public_company.py — Private temp-workspace public-data validation
 program.md            — Agent instructions
 app/                  — React/Vite public product site
