@@ -3,11 +3,12 @@ import { catalogGroups } from "../lib/onboarding";
 
 const workflowLinks = [
   { label: "Start Onboarding", href: "#onboarding", note: "Intake and readiness" },
+  { label: "Dataset Pipeline", href: "#dataset-pipeline", note: "Fine-tuning data generation" },
   { label: "Platform Engine", href: "#engine", note: "Prompt, retrieval, evaluation" },
   { label: "Capabilities", href: "#capabilities", note: "What the platform delivers" },
   { label: "Workflow", href: "#workflow", note: "How rollout happens" },
   { label: "Integration Model", href: "#integration", note: "Static, backend, local bridge" },
-  { label: "Agent System", href: "#agents", note: "llm-kb role routing" },
+  { label: "Agent System", href: "#agents", note: "Specialist role routing" },
   { label: "Validation", href: "#pilot", note: "Private benchmark path" },
 ];
 

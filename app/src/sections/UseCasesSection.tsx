@@ -21,6 +21,12 @@ const useCases = [
     outcome: "Strong for organizations that need custom AI behavior tied to how the business actually runs.",
   },
   {
+    industry: "Fine-tuning dataset programs",
+    knowledge: "Company docs, support cases, product policies, target labels, rejection rules, hard evaluation scenarios",
+    questions: "Which rows are worth training on, which should be rejected, and what does the model need to learn?",
+    outcome: "Fits companies preparing expert models or domain assistants that need high-quality data rather than generic synthetic rows.",
+  },
+  {
     industry: "Enterprise-ready rollout paths",
     knowledge: "Security requirements, deployment standards, review criteria, support processes",
     questions: "What does it take to move from prototype to a governed, supportable production system?",

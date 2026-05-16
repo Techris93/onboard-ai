@@ -8,14 +8,14 @@ const integrationCards = [
       "The frontend collects company context, desired source surfaces, rollout stage, governance needs, and target delivery systems.",
   },
   {
-    title: "2. /api/onboarding receives the packet",
+    title: "2. Delivery worker receives the packet",
     body:
-      "When a backend worker is attached, the site posts the intake to /api/onboarding, where llm-kb can run, artifacts are stored, and a run record is returned to the UI.",
+      "When a backend worker is attached, the intake is sent to the delivery API so specialist routing, artifact packaging, and dataset planning can run securely.",
   },
   {
     title: "3. Results return to the operator view",
     body:
-      "The site can display stored onboarding packets, artifact previews, launch notes, and agent recommendations without exposing raw CLI details to buyers.",
+      "The interface can display stored onboarding packets, artifact previews, launch notes, and agent recommendations without exposing operator-only implementation detail to buyers.",
   },
 ];
 
@@ -28,12 +28,12 @@ const operatingModes = [
   {
     title: "Backend worker mode",
     body:
-      "Best for production: the website posts the intake to a live API, a worker runs llm-kb and the evaluation stack, and the stored results come back into the interface.",
+      "Best for production: the website posts the intake to a live API, a worker runs knowledge operations and evaluation tasks, and the stored results come back into the interface.",
   },
   {
     title: "Local bridge mode",
     body:
-      "Useful for private or local-first delivery: the same API contract points at a local worker, which lets an operator run llm-kb nearby and still feed the site real artifacts.",
+      "Useful for private or local-first delivery: the same API contract points at a local worker, which lets an operator run the private delivery workspace nearby and still feed the site real artifacts.",
   },
 ];
 
@@ -51,13 +51,12 @@ export default function IntegrationSection() {
       <div className="section-inner">
         <div className="section-label reveal">Integration model</div>
         <h2 className="section-heading reveal">
-          How to make the onboarding flow actually work.
+          How the onboarding flow runs in production.
         </h2>
         <p className="section-copy reveal">
-          GitHub Pages can present the intake and outputs, but live llm-kb
-          execution belongs behind an API worker or a local bridge. That keeps
-          the website professional while still letting the underlying agent and
-          knowledge workflows do real work.
+          The public site presents the intake and returned artifacts, while
+          live knowledge operations, dataset planning, and evaluation work run
+          behind an API worker or a private local bridge.
         </p>
 
         <div className="integration-grid">

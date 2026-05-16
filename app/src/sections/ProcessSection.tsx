@@ -5,20 +5,25 @@ const steps = [
   {
     number: "01",
     title: "Ingest and structure the company context",
-    body: "Use llm-kb and the project data flow to sync source material, compile reusable knowledge, and keep onboarding artifacts visible and searchable.",
+    body: "Use a private knowledge workspace to prepare source material, structure reusable knowledge, and keep onboarding artifacts visible and searchable.",
   },
   {
     number: "02",
     title: "Select the right specialist agents",
-    body: "Route the work through llm-kb’s agent recommendation layer so frontend, AI, backend, security, DevOps, QA, and support roles appear where they add real value.",
+    body: "Route the work through specialist-agent recommendations so frontend, AI, backend, security, DevOps, QA, and support roles appear where they add real value.",
   },
   {
     number: "03",
-    title: "Validate, harden, and deploy professionally",
-    body: "Use the evaluation harness, evidence-based QA, and deployment automation to move from proof of concept toward enterprise-ready delivery.",
+    title: "Generate and gate fine-tuning data",
+    body: "Let Codex own dataset specs and quality gates while generator models produce batches that must pass privacy, label, leakage, and gold-reason checks.",
   },
   {
     number: "04",
+    title: "Validate, harden, and deploy professionally",
+    body: "Use evaluation, evidence-based QA, and deployment automation to move from prototype to enterprise-ready delivery.",
+  },
+  {
+    number: "05",
     title: "Let each onboarding path improve the next one",
     body: "Use path outcome memory to mark successful routes, detect stuck users, age out stale signals, and recommend the next best step by role and confidence.",
   },
@@ -34,13 +39,13 @@ export default function ProcessSection() {
       <div className="section-inner">
         <div className="section-label reveal">Workflow</div>
         <h2 className="section-heading reveal">
-          A delivery workflow that can grow past demo status.
+          A delivery workflow built for public-facing AI services.
         </h2>
         <p className="section-copy reveal">
           OnboardAI works as a complete execution model: local knowledge
-          operations, relevant llm-kb agent selection, configurable AI
-          behavior, path outcome memory, and measurable quality before
-          deployment.
+          operations, relevant specialist selection, fine-tuning dataset
+          preparation, configurable AI behavior, path outcome memory, and
+          measurable quality before deployment.
         </p>
 
         <div className="process-grid">

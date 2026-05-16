@@ -3,6 +3,7 @@ import Navigation from "../components/Navigation";
 import AgentSystemSection from "../sections/AgentSystemSection";
 import CapabilitiesSection from "../sections/CapabilitiesSection";
 import CatalogSection from "../sections/CatalogSection";
+import DatasetPipelineSection from "../sections/DatasetPipelineSection";
 import Footer from "../sections/Footer";
 import HeroSection from "../sections/HeroSection";
 import IntegrationSection from "../sections/IntegrationSection";
@@ -27,6 +28,7 @@ export default function Home() {
         <OnboardingSection />
         <CatalogSection />
         <CapabilitiesSection />
+        <DatasetPipelineSection />
         <ProcessSection />
         <PlatformSection />
         <IntegrationSection />

@@ -44,12 +44,12 @@ export default function AgentSystemSection() {
       <div className="section-inner">
         <div className="section-label reveal">Agent system</div>
         <h2 className="section-heading reveal">
-          llm-kb can route the work to the right specialist agents.
+          Specialist agents route the work to the right operator.
         </h2>
         <p className="section-copy reveal">
-          The platform uses a concrete delivery stack based on the relevant
-          llm-kb recommendation flow and specialist roles already available in
-          the imported agent library.
+          The platform uses a concrete delivery stack based on specialist-role
+          recommendations, activation briefs, and quality checks for every
+          stage of an AI onboarding program.
         </p>
 
         <div className="agent-table reveal">

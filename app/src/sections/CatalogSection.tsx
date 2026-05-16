@@ -15,10 +15,9 @@ export default function CatalogSection() {
           Product, resources, and company pages become onboarding inputs.
         </h2>
         <p className="section-copy reveal">
-          These are not filler nav links. They are the source surfaces that turn
-          a generic assistant idea into a structured onboarding program with
-          stronger retrieval, better escalation behavior, and more credible
-          rollout decisions.
+          Each surface feeds the onboarding plan, retrieval strategy, dataset
+          scope, escalation behavior, and rollout decisions that make a custom
+          AI system credible in public and private company settings.
         </p>
 
         <div className="directory-stack">

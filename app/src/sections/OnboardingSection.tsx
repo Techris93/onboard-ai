@@ -178,9 +178,9 @@ export default function OnboardingSection() {
           Collect the real inputs before you promise a real AI rollout.
         </h2>
         <p className="section-copy reveal">
-          This intake still gives you a live readiness preview on the page, but
-          it can now also send the packet into a backend worker that stores the
-          run, routes through llm-kb, and returns publish-safe artifacts.
+          This intake creates a readiness preview and can send the approved
+          packet into a live delivery worker for specialist routing, artifact
+          packaging, and fine-tuning dataset preparation.
         </p>
 
         <div className="onboarding-layout">
@@ -365,9 +365,8 @@ export default function OnboardingSection() {
             <div className="field-block onboarding-submit-block">
               <div className="field-label">Activation</div>
               <p className="field-copy">
-                The page keeps the static pilot preview, and this button can
-                also push the intake into a live worker when a backend is
-                attached for the deployment.
+                Generate the public readiness plan, then use the live worker
+                to prepare delivery artifacts when the backend is available.
               </p>
               <div className="button-row onboarding-actions">
                 <button
@@ -497,7 +496,7 @@ export default function OnboardingSection() {
             </div>
 
             <div className="summary-block">
-              <p className="footer-title">Recommended llm-kb agent roles</p>
+              <p className="footer-title">Recommended specialist roles</p>
               <div className="agent-pill-group">
                 {agentList.map((agent) => (
                   <span key={agent} className="agent-pill">
@@ -519,7 +518,7 @@ export default function OnboardingSection() {
             </div>
 
             <div className="summary-block">
-              <p className="footer-title">Backend execution</p>
+              <p className="footer-title">Delivery run</p>
               <div className={`execution-banner is-${submissionState}`}>
                 {backendStatusText(submissionState, backendResult, apiBaseUrl)}
               </div>
@@ -545,7 +544,7 @@ export default function OnboardingSection() {
                   {backendResult.commandResults.map((item) => (
                     <div key={item.step} className="summary-list-item command-item">
                       <div className="command-summary-row">
-                        <strong>{item.step}</strong>
+                        <strong>{item.label ?? "Delivery step"}</strong>
                         <span
                           className={`status-pill${
                             item.ok ? " is-success" : " is-error"

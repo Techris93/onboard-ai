@@ -8,8 +8,8 @@ export default function Footer() {
           <div className="brand-mark">OnboardAI</div>
           <p className="footer-copy">
             OnboardAI turns intake answers, public and private source material,
-            and llm-kb-aligned delivery roles into a professional onboarding
-            packet for real AI rollouts.
+            fine-tuning dataset requirements, and specialist delivery roles
+            into a professional onboarding packet for real AI rollouts.
           </p>
         </div>
 
@@ -33,7 +33,7 @@ export default function Footer() {
 
       <div className="footer-bar">
         <span>{new Date().getFullYear()} OnboardAI</span>
-        <span>Working onboarding intake, llm-kb agent mapping, and public-source pilot design</span>
+        <span>AI onboarding, expert-model dataset preparation, and production readiness</span>
       </div>
     </footer>
   );

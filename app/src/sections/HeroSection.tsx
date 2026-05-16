@@ -3,8 +3,9 @@ import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
 
 const heroProof = [
   "Customized AI integration for small to mid-sized companies.",
+  "Fine-tuning dataset pipelines for expert language models.",
   "Adaptive onboarding paths that learn from success and friction.",
-  "Relevant llm-kb agents for delivery, hardening, and support.",
+  "Specialist agents for delivery, hardening, and support.",
   "Enterprise-grade posture for security, deployment, and governance.",
 ];
 
@@ -27,10 +28,11 @@ export default function HeroSection() {
         </h1>
 
         <p className="hero-copy reveal">
-          OnboardAI combines company knowledge, llm-kb knowledge operations,
-          adaptive onboarding paths, and relevant specialist agents to design,
-          secure, deploy, and support AI systems that feel credible for real
-          businesses and professional buyers.
+          OnboardAI combines company knowledge, private knowledge operations,
+          fine-tuning dataset preparation, adaptive onboarding paths, and
+          relevant specialist agents to design, secure, deploy, and support AI
+          systems that feel credible for real businesses and professional
+          buyers.
         </p>
 
         <div className="button-row reveal">
@@ -38,7 +40,7 @@ export default function HeroSection() {
             Start Onboarding
           </a>
           <a className="button button-secondary" href="#pilot">
-            See Validation Path
+            See Validation
           </a>
         </div>
 

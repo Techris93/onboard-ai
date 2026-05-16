@@ -3,16 +3,20 @@ import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
 
 const features = [
   {
-    title: "llm-kb agent recommendation and activation",
-    description: "Use llm-kb agents, agent-show, agent-use, and agent-start to move from a request to a role-specific execution path quickly and consistently.",
+    title: "Specialist-agent recommendation and activation",
+    description: "Move from a company request to role-specific execution with specialist routing, activation briefs, and delivery handoffs.",
   },
   {
     title: "Local-first knowledge compilation",
-    description: "Sync, compile, search, ask, and synthesize project memory into reusable markdown outputs instead of losing context across chats and repos.",
+    description: "Turn source material, project memory, and delivery notes into reusable knowledge assets instead of losing context across chats and repositories.",
+  },
+  {
+    title: "Fine-tuning dataset preparation",
+    description: "Plan dataset batches, generator instructions, quality gates, and evaluation coverage for smaller company-specific expert models.",
   },
   {
     title: "Operational memory and mistake guardrails",
-    description: "llm-kb can track recurring mistakes, surface guardrails, and keep the team from relearning the same expensive lessons on each rollout.",
+    description: "Operational memory can track recurring mistakes, surface guardrails, and keep the team from relearning the same expensive lessons on each rollout.",
   },
   {
     title: "Publish-safe outputs and executive artifacts",
@@ -24,6 +28,10 @@ const deliveryPillars = [
   {
     label: "Knowledge memory",
     detail: "Structured project memory that can support onboarding, implementation, and ongoing operations.",
+  },
+  {
+    label: "Dataset operations",
+    detail: "Codex-authored specs, provider-neutral generation, rejected-row tracking, and quality-gate reports for fine-tuning programs.",
   },
   {
     label: "Agent orchestration",
@@ -66,7 +74,7 @@ function OrbitVisualization() {
         </g>
 
         {[
-          { cx: 200, cy: 56, label: "SYNC" },
+          { cx: 200, cy: 56, label: "PREP" },
           { cx: 324, cy: 272, label: "ROUTE" },
           { cx: 76, cy: 272, label: "DEPLOY" },
         ].map((node) => (
@@ -126,7 +134,7 @@ export default function PlatformSection() {
         <div className="platform-copy">
           <div className="section-label reveal">Engine</div>
           <h2 className="section-heading reveal">
-            llm-kb turns scattered work into a usable delivery engine.
+            OnboardAI turns scattered knowledge into a delivery engine.
           </h2>
           <p className="section-copy reveal">
             OnboardAI combines knowledge compilation, specialist-agent routing,

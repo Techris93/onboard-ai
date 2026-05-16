@@ -3,6 +3,7 @@ export type UseCase =
   | "customer-support"
   | "internal-copilot"
   | "product-api-assistant"
+  | "fine-tuning-dataset"
   | "sales-enablement"
   | "operations-assistant";
 export type RolloutStage = "discovery" | "pilot" | "production";
@@ -87,6 +88,30 @@ export const catalogGroups: CatalogGroup[] = [
           "Capture the core product architecture, product modules, service boundaries, and who the platform is built for.",
         output:
           "Platform narrative, feature map, and use-case framing for the onboarding brief.",
+      },
+      {
+        id: "product-ai-onboarding",
+        label: "AI Onboarding",
+        summary:
+          "Map the company context, target users, handoff points, and success criteria before model or assistant work begins.",
+        output:
+          "Operational onboarding plan with role ownership, source authority, and launch readiness criteria.",
+      },
+      {
+        id: "product-dataset-pipeline",
+        label: "Fine-Tuning Dataset Pipeline",
+        summary:
+          "Design high-quality dataset generation loops for company-specific ELMs and domain assistants.",
+        output:
+          "Batch plan, generator specs, quality gates, rejected-row policy, and improvement loop.",
+      },
+      {
+        id: "product-elm-readiness",
+        label: "ELM Readiness",
+        summary:
+          "Prepare smaller expert models in the 5B to 15B range with scope boundaries, evaluation sets, and deployment constraints.",
+        output:
+          "Expert model readiness score covering data quality, labels, privacy, evaluations, and serving path.",
       },
       {
         id: "product-pricing",
@@ -218,6 +243,7 @@ export const useCaseOptions = [
   { value: "customer-support", label: "Customer support assistant" },
   { value: "internal-copilot", label: "Internal knowledge copilot" },
   { value: "product-api-assistant", label: "Product and API assistant" },
+  { value: "fine-tuning-dataset", label: "Fine-tuning dataset pipeline" },
   { value: "sales-enablement", label: "Sales enablement assistant" },
   { value: "operations-assistant", label: "Operations and compliance assistant" },
 ] as const;
@@ -233,19 +259,19 @@ export const integrationModes = [
     value: "advisory",
     label: "Advisory planning",
     detail:
-      "Use the site to scope sources, agents, and deliverables before live execution exists.",
+      "Scope sources, specialist roles, dataset needs, and deliverables before live execution begins.",
   },
   {
     value: "backend-worker",
     label: "Backend worker",
     detail:
-      "A web API hands the intake to a worker that runs llm-kb, compiles knowledge, and publishes outputs.",
+      "A delivery API hands the intake to a worker that prepares knowledge, specialist routing, and publish-safe outputs.",
   },
   {
     value: "local-bridge",
     label: "Local bridge",
     detail:
-      "An operator or desktop helper runs llm-kb locally and returns results to the web surface.",
+      "An operator or desktop helper runs private knowledge operations locally and returns approved results to the web surface.",
   },
 ] as const;
 
@@ -268,7 +294,7 @@ export const deliverySystems = [
 ] as const;
 
 export const defaultOnboardingProfile: OnboardingProfile = {
-  companyName: "Northwind Support",
+  companyName: "Your Company",
   industry: "Software / SaaS",
   companySize: "mid-market",
   useCase: "customer-support",
@@ -276,6 +302,9 @@ export const defaultOnboardingProfile: OnboardingProfile = {
   integrationMode: "backend-worker",
   sources: [
     "product-platform",
+    "product-ai-onboarding",
+    "product-dataset-pipeline",
+    "product-elm-readiness",
     "product-security",
     "resources-documentation",
     "resources-api-reference",
@@ -370,6 +399,8 @@ function scoreProfile(profile: OnboardingProfile): ScoreBreakdown {
         ? 19
         : 16) +
     (profile.sources.includes("resources-api-reference") ? 3 : 0) +
+    (profile.sources.includes("product-dataset-pipeline") ? 3 : 0) +
+    (profile.sources.includes("product-elm-readiness") ? 2 : 0) +
     (profile.sources.includes("product-changelog") ? 2 : 0) +
     (profile.sources.includes("resources-documentation") ? 1 : 0);
 
@@ -407,9 +438,18 @@ function buildAgentList(profile: OnboardingProfile) {
   if (
     profile.useCase === "internal-copilot" ||
     profile.useCase === "product-api-assistant" ||
+    profile.useCase === "fine-tuning-dataset" ||
     profile.useCase === "operations-assistant"
   ) {
     agents.push("AI Engineer", "Backend Architect");
+  }
+
+  if (
+    profile.useCase === "fine-tuning-dataset" ||
+    profile.sources.includes("product-dataset-pipeline") ||
+    profile.sources.includes("product-elm-readiness")
+  ) {
+    agents.push("AI Engineer", "Code Reviewer", "Technical Writer");
   }
 
   if (
@@ -451,6 +491,10 @@ function buildDeliverables(
   return [
     `${profile.companyName} onboarding brief covering ${sourceSummary}.`,
     `${profile.useCase.replaceAll("-", " ")} assistant scope for the ${profile.industry.toLowerCase()} motion.`,
+    profile.useCase === "fine-tuning-dataset" ||
+    profile.sources.includes("product-dataset-pipeline")
+      ? "Fine-tuning dataset pipeline with batch plans, generator instructions, quality gates, and rejected-row handling."
+      : "Source authority map for prompts, retrieval, handoffs, and measurable launch criteria.",
     `${profile.integrationMode.replaceAll("-", " ")} operating model with roles for ${agents
       .slice(0, 3)
       .join(", ")}.`,
@@ -463,21 +507,21 @@ function buildIntegrationSteps(profile: OnboardingProfile) {
     return [
       "Capture onboarding answers in the web intake and generate a delivery brief.",
       "Review source priorities, agent roles, and rollout constraints with stakeholders.",
-      "Hand the approved brief to an operator who runs llm-kb and publishes outputs back into the project.",
+      "Hand the approved brief to an operator who prepares the private workspace and publishes approved outputs back into the project.",
     ];
   }
 
   if (profile.integrationMode === "local-bridge") {
     return [
       "The website collects onboarding answers and prepares a normalized intake packet.",
-      "A local bridge or desktop helper runs llm-kb knowledge compilation and agent selection against that packet.",
+      "A local bridge or desktop helper runs knowledge compilation and specialist selection against that packet.",
       "The generated briefs, QA notes, and publish-safe outputs return to the site or operator dashboard.",
     ];
   }
 
   return [
-    "The website posts onboarding answers to /api/onboarding and stores the project scope.",
-    "A worker runs llm-kb knowledge compilation, agent recommendation, synthesis, and packaging against the approved sources.",
+    "The website sends onboarding answers to the delivery worker and stores the project scope.",
+    "A worker runs knowledge compilation, specialist routing, dataset planning, synthesis, and packaging against the approved sources.",
     "The platform stores the resulting brief, review outputs, and release-ready artifacts for launch and support teams.",
   ];
 }
@@ -485,6 +529,9 @@ function buildIntegrationSteps(profile: OnboardingProfile) {
 function priorityRoleFor(profile: OnboardingProfile) {
   if (profile.useCase === "product-api-assistant") {
     return "Developer success";
+  }
+  if (profile.useCase === "fine-tuning-dataset") {
+    return "AI delivery lead";
   }
   if (profile.useCase === "customer-support") {
     return "Support lead";
@@ -505,6 +552,9 @@ function receptiveWindowFor(profile: OnboardingProfile) {
   if (profile.useCase === "product-api-assistant") {
     return "Morning developer planning block";
   }
+  if (profile.useCase === "fine-tuning-dataset") {
+    return "Before batch approval or evaluation review";
+  }
   if (profile.useCase === "sales-enablement") {
     return "After account review and before follow-up drafting";
   }
@@ -523,6 +573,9 @@ function adaptiveToneFor(profile: OnboardingProfile) {
   }
   if (profile.useCase === "product-api-assistant") {
     return "Technical, example-led, and source-cited";
+  }
+  if (profile.useCase === "fine-tuning-dataset") {
+    return "Precise, evidence-led, and quality-gate oriented";
   }
   return "Calm, practical, and role-specific";
 }
@@ -682,6 +735,6 @@ export function buildOnboardingResult(
     deliverables,
     integrationSteps,
     adaptivePath,
-    summary: `${profile.companyName} can start with a ${label.toLowerCase()} built around ${selectedSources.length} selected source surfaces, ${agents.length} recommended llm-kb-aligned roles, and a ${profile.integrationMode.replaceAll("-", " ")} activation path.`,
+    summary: `${profile.companyName} can start with a ${label.toLowerCase()} built around ${selectedSources.length} selected source surfaces, ${agents.length} recommended specialist roles, and a ${profile.integrationMode.replaceAll("-", " ")} activation path.`,
   };
 }

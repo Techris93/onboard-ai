@@ -1,14 +1,19 @@
 <p align="center">
   <h1 align="center">🧠 OnboardAI</h1>
-  <p align="center"><strong>AI-Powered Business Onboarding</strong></p>
-  <p align="center">Drop in your business data → AI agent optimizes the config → you get a custom AI assistant.</p>
+  <p align="center"><strong>AI Onboarding, Dataset Preparation, and Expert Model Readiness</strong></p>
+  <p align="center">Turn company knowledge into governed AI rollout plans, fine-tuning dataset pipelines, and delivery-ready artifacts.</p>
 </p>
 
 ---
 
 ## What It Does
 
-OnboardAI uses the [autoresearch](https://github.com/karpathy/autoresearch) pattern to automatically optimize an AI assistant for your specific business. An AI agent iterates on system prompts, few-shot examples, and retrieval settings until the AI accurately answers your customers' questions.
+OnboardAI helps small and mid-sized companies prepare customized AI systems with structured onboarding, knowledge operations, specialist-agent routing, evaluation loops, and fine-tuning dataset planning for smaller expert language models.
+
+The product focuses on three connected workflows:
+- Company AI onboarding for support, internal copilots, product/API assistants, sales enablement, and operations.
+- Fine-tuning dataset generation with Codex-authored specs, provider-neutral generator execution, quality gates, rejected-row tracking, and batch improvement reports.
+- Operational readiness for security, governance, deployment, support, and public-source validation before private client data is imported.
 
 ## Quick Start
 
@@ -20,7 +25,7 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env → add GEMINI_API_KEY
 
-# 3. Generate sample data (or import your own)
+# 3. Prepare local evaluation data or import company documents
 python prepare.py
 
 # 4. Run baseline evaluation
@@ -32,15 +37,26 @@ python evaluate.py --provider local --verbose
 # 5. Point your AI agent at program.md to start optimizing
 ```
 
-`evaluate.py` now retries transient Gemini `429` and `503` failures with
+`evaluate.py` retries transient Gemini `429` and `503` failures with
 backoff, so benchmark runs are less likely to fail on short-lived API issues.
 It also supports `--provider local` for a model-free offline benchmark path.
+
+## Fine-Tuning Dataset Pipeline
+
+OnboardAI includes a deterministic dataset pipeline planner that can run without provider keys. It produces a company-specific plan covering:
+- Codex orchestration for goals, use-case specs, schemas, labels, prompts, quality gates, rejects, reports, and worklog.
+- Generator contracts for low-cost providers such as DeepSeek v4 Pro or any compatible model execution layer.
+- Raw batch archive policy for accepted rows, rejected rows, quality notes, gold reasoning, and traceability metadata.
+- Quality gates for schema validity, role correctness, allowed labels, canonical order, duplicate prompts, placeholder text, target-scope signal, helper-scope policy, unsupported-primary policy, split intent, leakage risk, synthetic pattern detection, gold reason quality, train/test leakage, company-data privacy, and evaluation coverage.
+- Iterative improvement after every batch so the next generator spec and gate set become stronger.
+
+The backend writes dataset pipeline markdown and JSON artifacts during onboarding runs.
 
 ## Private Public-Data Validation
 
 Use the private validation runner when you want to onboard a public company for
-testing without writing that demo data into the repo's tracked `data/` files or
-the website.
+testing without writing that external validation data into the repo's tracked
+`data/` files or the website.
 
 ```bash
 python validate_public_company.py \
@@ -61,7 +77,7 @@ Notes:
 
 ## Backend Worker
 
-The repo now includes a real onboarding API:
+The repo includes a real onboarding API:
 
 ```bash
 python backend_api.py --host 127.0.0.1 --port 8787
@@ -70,20 +86,22 @@ python backend_api.py --host 127.0.0.1 --port 8787
 Available routes:
 - `GET /api/health`
 - `GET /api/runs/<run_id>`
+- `GET /api/dataset-pipeline/runs/<run_id>`
 - `POST /api/onboarding`
+- `POST /api/dataset-pipeline/plan`
 
 What the worker does:
 - stores each onboarding run locally under `state/onboarding_api/`
 - creates a writable llm-kb workspace under `state/llm_kb_workspace/` unless `LLM_KB_ROOT` is set
-- writes a normalized intake packet and onboarding brief
-- runs `llm-kb` sync, compile, agent recommendation, activation brief creation, filing, and publish-safe artifact generation when `llm-kb` is installed locally
+- writes a normalized intake packet, onboarding brief, and fine-tuning dataset pipeline plan
+- uses `llm-kb` for source preparation, knowledge compilation, agent recommendation, activation brief creation, filing, and publish-safe artifact generation when it is installed locally
 - returns the stored run, command summaries, warnings, and artifact previews to the website
 
 ## Adaptive Onboarding Paths
 
-OnboardAI no longer treats onboarding as a static checklist. Each completed or
-stalled path updates local outcome memory so the next user can be routed with
-better timing, confidence, and context.
+OnboardAI treats onboarding as an adaptive workflow. Each completed or stalled
+path updates local outcome memory so the next user can be routed with better
+timing, confidence, and context.
 
 Implemented capabilities:
 - **Confusion detection** identifies risk early and recommends intervention.
@@ -105,7 +123,7 @@ How to use it:
 
 ## Frontend To Backend Wiring
 
-The onboarding form in `app/` can now POST directly to the backend worker.
+The onboarding form in `app/` can POST directly to the backend worker.
 
 Local development:
 
@@ -122,7 +140,7 @@ Deployment options:
 
 ### Render
 
-The checked-in `render.yaml` and `scripts/render_build.sh` install this repo's declared Python and frontend dependencies, then build the Vite app. The `llm-knowledge-base` repository is now public, so Render no longer needs GitHub credentials to clone it. The backend still treats the `llm-kb` binary as optional via `LLM_KB_BIN`, which keeps deploys healthy even when `llm-kb` is not installed in the image.
+The checked-in `render.yaml` and `scripts/render_build.sh` install this repo's declared Python and frontend dependencies, then build the Vite app. The public `llm-knowledge-base` repository can be installed during Render builds without GitHub credentials. The backend treats the `llm-kb` binary as optional via `LLM_KB_BIN`, which keeps deploys healthy even when `llm-kb` is not installed in the image.
 
 Recommended Render setup:
 - Use the checked-in `render.yaml` Blueprint.
@@ -133,9 +151,9 @@ Recommended Render setup:
 
 ## Frontend
 
-A lightweight React/Vite landing page now lives in `app/`. It mirrors the
-actual repository workflow instead of inventing product features, so you can
-use it as a project homepage, demo shell, or launch pad for future UI work.
+The React/Vite public site lives in `app/`. It presents OnboardAI as a product
+surface for AI onboarding, fine-tuning dataset readiness, grouped navigation,
+and backend-powered artifact generation.
 
 ```bash
 cd app
@@ -143,9 +161,9 @@ npm install
 npm run dev
 ```
 
-The frontend is intentionally separate from the Python harness:
-- Root Python files still drive data prep, config tuning, and evaluation.
-- `app/` is a presentational frontend for explaining and showcasing that loop.
+The frontend is intentionally separate from the Python backend:
+- Root Python files drive data prep, config tuning, dataset planning, and evaluation.
+- `app/` presents the public product experience and submits approved intakes to the backend worker.
 
 ## How It Works
 
@@ -193,14 +211,15 @@ Edit `data/knowledge.json` with your business info and `data/test_qa.json` with 
 ## Project Structure
 
 ```
-prepare.py   — Load/generate business data (DO NOT MODIFY)
-config.py    — AI configuration (AGENT MODIFIES THIS)
-evaluate.py  — Scoring engine with retry-aware Gemini evaluation
-backend_runtime.py  — Run storage, llm-kb orchestration, and artifact packaging
-backend_api.py  — HTTP API for live onboarding intake execution
-validate_public_company.py  — Private temp-workspace public-data validation
-program.md   — Agent instructions
-app/         — React/Vite frontend for the project homepage
+prepare.py            — Import or generate local business knowledge
+config.py             — Assistant configuration and retrieval behavior
+evaluate.py           — Scoring engine with retry-aware Gemini and local evaluation
+dataset_pipeline.py   — Fine-tuning dataset pipeline planning and artifacts
+backend_runtime.py    — Run storage, llm-kb orchestration, and artifact packaging
+backend_api.py        — HTTP API for live onboarding and research execution
+validate_public_company.py — Private temp-workspace public-data validation
+program.md            — Agent instructions
+app/                  — React/Vite public product site
 ```
 
 ## License

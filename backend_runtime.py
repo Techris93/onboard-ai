@@ -2,8 +2,8 @@
 Backend runtime for OnboardAI onboarding intake execution.
 
 This module validates intake payloads, stores normalized runs locally, and
-bridges the intake to llm-kb so the website can return real artifacts instead
-of only a static planning preview.
+bridges the intake to the specialist workspace so the website can return real
+artifacts instead of only a static planning preview.
 """
 
 from __future__ import annotations
@@ -11,12 +11,13 @@ from __future__ import annotations
 import json
 import os
 import re
-import shlex
 import subprocess
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
+
+from dataset_pipeline import write_dataset_pipeline_artifacts
 
 
 REPO_DIR = Path(__file__).resolve().parent
@@ -30,6 +31,9 @@ DEFAULT_LLM_KB_BIN = Path(
 
 SOURCE_LABELS = {
     "product-platform": "Platform",
+    "product-ai-onboarding": "AI Onboarding",
+    "product-dataset-pipeline": "Fine-Tuning Dataset Pipeline",
+    "product-elm-readiness": "ELM Readiness",
     "product-pricing": "Pricing",
     "product-security": "Security",
     "product-changelog": "Changelog",
@@ -47,6 +51,7 @@ USE_CASE_LABELS = {
     "customer-support": "Customer support assistant",
     "internal-copilot": "Internal knowledge copilot",
     "product-api-assistant": "Product and API assistant",
+    "fine-tuning-dataset": "Fine-tuning dataset pipeline",
     "sales-enablement": "Sales enablement assistant",
     "operations-assistant": "Operations and compliance assistant",
 }
@@ -80,6 +85,7 @@ class ArtifactRecord:
 @dataclass
 class CommandRecord:
     step: str
+    label: str
     command: str
     ok: bool
     exit_code: int
@@ -184,6 +190,13 @@ def _integration_label(profile: Dict[str, Any]) -> str:
 
 def build_agent_task(profile: Dict[str, Any]) -> str:
     source_summary = ", ".join(_source_labels(profile)[:6]) or "core company sources"
+    if profile["useCase"] == "fine-tuning-dataset" or "product-dataset-pipeline" in profile["sources"]:
+        return (
+            f"Design a fine-tuning dataset generation workflow for {profile['companyName']} "
+            f"focused on {_use_case_label(profile).lower()} with {source_summary}. "
+            "Include Codex orchestration, generator model instructions, quality gates, "
+            "rejected-row handling, and 5B to 15B expert model readiness."
+        )
     return (
         f"Design a {profile['industry']} onboarding workflow for {profile['companyName']} "
         f"focused on {_use_case_label(profile).lower()} with {source_summary} in "
@@ -227,7 +240,7 @@ def build_intake_markdown(profile: Dict[str, Any]) -> str:
             "",
             "## Backend Intent",
             "",
-            "This intake is ready for llm-kb-backed agent selection, artifact packaging, and publish-safe storage.",
+            "This intake is ready for specialist-agent selection, artifact packaging, and publish-safe storage.",
             "",
         ]
     )
@@ -255,7 +268,7 @@ def build_brief_markdown(profile: Dict[str, Any], agents: List[str]) -> str:
         f"- Delivery systems: {', '.join(systems) if systems else 'Clarify launch surfaces before activation.'}",
         f"- Governance: {', '.join(governance)}",
         "",
-        "## Recommended llm-kb Roles",
+        "## Recommended Specialist Roles",
         "",
     ]
 
@@ -286,6 +299,29 @@ def _artifact_from_file(label: str, kind: str, path: Path) -> ArtifactRecord:
     return ArtifactRecord(label=label, kind=kind, path=str(path), preview=preview)
 
 
+def public_llm_kb_status() -> Dict[str, Any]:
+    status = llm_kb_status()
+    return {
+        "available": status["available"],
+        "binary": "configured" if status["available"] else "unavailable",
+        "root": "private delivery workspace",
+    }
+
+
+def _sanitize_public_text(value: str) -> str:
+    sanitized = value.replace(str(REPO_DIR), "<workspace>")
+    sanitized = sanitized.replace(str(LLM_KB_WORKSPACE), "<delivery-workspace>")
+    sanitized = re.sub(r"/Users/[^\s\"']+", "<local-path>", sanitized)
+    return sanitized
+
+
+def _public_artifact_record(record: ArtifactRecord) -> Dict[str, Any]:
+    payload = asdict(record)
+    payload["path"] = f"artifact://{Path(record.path).name}"
+    payload["preview"] = _sanitize_public_text(record.preview)
+    return payload
+
+
 def _summarize_command(
     step: str,
     command: List[str],
@@ -297,27 +333,52 @@ def _summarize_command(
     if exit_code == 0:
         if step == "sync":
             return (
-                f"llm-kb sync completed with {parsed.get('copied', '?')} copied files, "
-                f"{parsed.get('skipped', '?')} skipped files, and {parsed.get('missing', '?')} missing patterns."
+                f"Source preparation completed with {parsed.get('copied', '?')} updated files, "
+                f"{parsed.get('skipped', '?')} unchanged files, and {parsed.get('missing', '?')} missing source patterns."
             )
         if step == "compile":
             return (
-                f"llm-kb compile completed and wrote {parsed.get('sources_written', '?')} "
+                f"Knowledge compilation completed and wrote {parsed.get('sources_written', '?')} "
                 f"source pages and {parsed.get('project_pages_written', '?')} project pages."
             )
         if step == "agents":
             recommended = len(parse_agent_names(stdout))
-            return f"llm-kb recommended {recommended} specialist roles for this onboarding task."
+            return f"Specialist routing recommended {recommended} delivery roles for this onboarding task."
         if step == "agent-start":
             selected = parsed.get("selected", "No agent selected")
-            return f"llm-kb created an activation brief for {selected}."
+            return f"An activation brief was created for {selected}."
         if step.startswith("publish"):
-            return f"llm-kb published a sanitized artifact to {parsed.get('published_to', 'its publish target')}."
+            return "A publish-safe artifact was prepared for controlled sharing."
         if step == "file-output":
-            return "llm-kb filed the onboarding brief back into its local knowledge store."
+            return "The onboarding brief was filed into the delivery workspace."
 
     stderr_preview = _trim(stderr or stdout or "Unknown command failure.", 260)
-    return f"{step} failed with exit code {exit_code}. {stderr_preview}"
+    return f"{_artifact_label_for_step(step)} needs attention. {stderr_preview}"
+
+
+def _artifact_label_for_step(step: str) -> str:
+    labels = {
+        "sync": "Source preparation",
+        "compile": "Knowledge compilation",
+        "agents": "Specialist routing",
+        "agent-start": "Activation brief",
+        "file-output": "Workspace filing",
+        "publish-brief": "Published onboarding brief",
+        "publish-dataset-pipeline": "Published dataset pipeline",
+        "publish-intake": "Published intake packet",
+    }
+    return labels.get(step, step.replace("-", " ").title())
+
+
+def _public_command_record(record: CommandRecord) -> Dict[str, Any]:
+    payload = asdict(record)
+    payload["step"] = slugify(record.label)
+    payload["stdout_preview"] = _sanitize_public_text(record.stdout_preview)
+    payload["stderr_preview"] = _sanitize_public_text(record.stderr_preview)
+    payload["parsed"] = {
+        key: _sanitize_public_text(value) for key, value in record.parsed.items()
+    }
+    return payload
 
 
 TOP_LEVEL_OUTPUT_KEYS = {
@@ -391,7 +452,8 @@ def run_llm_kb_command(step: str, args: List[str], cwd: Path) -> CommandRecord:
 
     return CommandRecord(
         step=step,
-        command=shlex.join(command),
+        label=_artifact_label_for_step(step),
+        command=f"{_artifact_label_for_step(step)} operator action",
         ok=completed.returncode == 0,
         exit_code=completed.returncode,
         summary=summary,
@@ -434,6 +496,7 @@ def run_onboarding(payload: Dict[str, Any]) -> Dict[str, Any]:
     intake_markdown_path = run_dir / "intake-packet.md"
     brief_markdown_path = run_dir / "onboarding-brief.md"
     activation_path = run_dir / "agent-activation.md"
+    dataset_pipeline_paths = write_dataset_pipeline_artifacts(profile, run_dir)
     response_path = run_dir / "response.json"
 
     _write_json(intake_json_path, profile)
@@ -444,6 +507,8 @@ def run_onboarding(payload: Dict[str, Any]) -> Dict[str, Any]:
     artifacts = [
         _artifact_from_file("Normalized intake", "json", intake_json_path),
         _artifact_from_file("Intake packet", "markdown", intake_markdown_path),
+        _artifact_from_file("Fine-tuning dataset pipeline", "markdown", Path(dataset_pipeline_paths["markdown"])),
+        _artifact_from_file("Dataset pipeline spec", "json", Path(dataset_pipeline_paths["json"])),
     ]
     recommended_agents: List[str] = []
     warnings: List[str] = []
@@ -502,6 +567,19 @@ def run_onboarding(payload: Dict[str, Any]) -> Dict[str, Any]:
                 ],
             ),
             (
+                "publish-dataset-pipeline",
+                [
+                    "publish",
+                    str(dataset_pipeline_paths["markdown"]),
+                    "--target",
+                    "outputs",
+                    "--into",
+                    "onboardai",
+                    "--title",
+                    f"{slugify(profile['companyName'])}-dataset-pipeline",
+                ],
+            ),
+            (
                 "publish-intake",
                 [
                     "publish",
@@ -517,13 +595,13 @@ def run_onboarding(payload: Dict[str, Any]) -> Dict[str, Any]:
         ]:
             command_results.append(run_llm_kb_command(step, args, cwd=llm_kb_root))
 
-        for record in command_results[-2:]:
+        for record in [item for item in command_results if item.step.startswith("publish")]:
             published_to = record.parsed.get("published_to")
             output_path = record.stdout_preview.splitlines()[0].strip() if record.stdout_preview else ""
             if output_path and Path(output_path).exists():
                 artifacts.append(
                     _artifact_from_file(
-                        f"{record.step} output",
+                        f"{_artifact_label_for_step(record.step)} source",
                         "markdown",
                         Path(output_path),
                     )
@@ -531,14 +609,14 @@ def run_onboarding(payload: Dict[str, Any]) -> Dict[str, Any]:
             if published_to and Path(published_to).exists():
                 artifacts.append(
                     _artifact_from_file(
-                        f"{record.step} publish target",
+                        _artifact_label_for_step(record.step),
                         "markdown",
                         Path(published_to),
                     )
                 )
     else:
         warnings.append(
-            "llm-kb was not found on this machine, so the run stayed in packet-only mode."
+            "The specialist workspace is not available in this environment, so the run returned packet artifacts only."
         )
         brief_markdown_path.write_text(
             build_brief_markdown(profile, recommended_agents),
@@ -546,7 +624,7 @@ def run_onboarding(payload: Dict[str, Any]) -> Dict[str, Any]:
         )
         artifacts.append(_artifact_from_file("Onboarding brief", "markdown", brief_markdown_path))
 
-    critical_steps = {"agents", "agent-start", "publish-brief", "publish-intake"}
+    critical_steps = {"agents", "agent-start", "publish-brief", "publish-dataset-pipeline", "publish-intake"}
     critical_results = [item for item in command_results if item.step in critical_steps]
     status = "completed" if critical_results and all(item.ok for item in critical_results) else (
         "partial" if command_results else "packet-only"
@@ -559,15 +637,15 @@ def run_onboarding(payload: Dict[str, Any]) -> Dict[str, Any]:
         "companyName": profile["companyName"],
         "integrationMode": profile["integrationMode"],
         "summary": (
-            f"{profile['companyName']} now has a stored onboarding run with "
-            f"{len(recommended_agents)} llm-kb-recommended roles and {len(artifacts)} tracked artifacts."
+            f"{profile['companyName']} has a delivery-ready onboarding package with "
+            f"{len(recommended_agents)} recommended specialist roles and {len(artifacts)} tracked artifacts."
         ),
         "recommendedAgents": recommended_agents,
-        "artifacts": [asdict(item) for item in artifacts],
-        "commandResults": [asdict(item) for item in command_results],
+        "artifacts": [_public_artifact_record(item) for item in artifacts],
+        "commandResults": [_public_command_record(item) for item in command_results],
         "warnings": warnings,
-        "llmKb": llm_kb,
-        "runDirectory": str(run_dir),
+        "llmKb": public_llm_kb_status(),
+        "runDirectory": f"run://{run_id}",
         "resultUrl": f"/api/runs/{run_id}",
     }
     _write_json(response_path, response)

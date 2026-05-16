@@ -12,12 +12,21 @@ const capabilities = [
     ],
   },
   {
-    title: "Local-first knowledge operations with llm-kb",
-    body: "llm-kb serves as a core capability, turning project memory, reusable outputs, and agent selection into a practical delivery layer.",
+    title: "Local-first knowledge operations",
+    body: "A private knowledge workspace turns project memory, reusable outputs, and agent selection into a practical delivery layer.",
     points: [
-      "Sync, compile, search, ask, synthesize, curate, and publish knowledge artifacts locally",
+      "Prepare, search, synthesize, curate, and publish knowledge artifacts in a private workspace",
       "Reusable markdown outputs for briefs, executive notes, reports, and decision support",
       "Project memory that supports onboarding, architecture work, incidents, and continuous improvement",
+    ],
+  },
+  {
+    title: "Fine-tuning dataset generation for expert models",
+    body: "OnboardAI prepares high-quality company datasets for smaller expert language models by separating orchestration, generation, review, and evaluation.",
+    points: [
+      "Codex-authored generation specs for each batch, label family, and hard evaluation pattern",
+      "Provider-neutral generator execution with DeepSeek v4 Pro as one cost-efficient option",
+      "Quality gates for schema, labels, leakage, duplicates, gold reasoning, and eval coverage",
     ],
   },
   {
@@ -31,7 +40,7 @@ const capabilities = [
   },
   {
     title: "Professional delivery with specialist agents",
-    body: "Relevant llm-kb agent workflows can recommend and activate specialist roles for frontend polish, AI engineering, backend architecture, security hardening, DevOps automation, QA, compliance, and support.",
+    body: "Specialist-agent workflows can recommend and activate roles for frontend polish, AI engineering, backend architecture, security hardening, DevOps automation, QA, compliance, and support.",
     points: [
       "Agent recommendation and activation for the right skill at the right stage",
       "Evidence-based QA and hardening before anything is called production-ready",
@@ -50,12 +59,12 @@ export default function CapabilitiesSection() {
       <div className="section-inner">
         <div className="section-label reveal">Capabilities</div>
         <h2 className="section-heading reveal">
-          A service-ready AI platform, not just a prompt experiment.
+          A service-ready AI platform for onboarding, datasets, and deployment.
         </h2>
         <p className="section-copy reveal">
-          Structured knowledge operations, specialist-agent delivery, and a
-          path from SMB deployment to enterprise-grade governance define the
-          platform.
+          Structured knowledge operations, fine-tuning dataset preparation,
+          specialist-agent delivery, and a path from SMB deployment to
+          enterprise-grade governance define the platform.
         </p>
 
         <div className="capability-grid">

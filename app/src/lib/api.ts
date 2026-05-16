@@ -15,6 +15,7 @@ export type BackendArtifact = {
 
 export type BackendCommandResult = {
   step: string;
+  label?: string;
   command: string;
   ok: boolean;
   exit_code: number;

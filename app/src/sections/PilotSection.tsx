@@ -16,7 +16,7 @@ const validationChecklist = [
 
 const validationOutputs = [
   "A private benchmark for source coverage, retrieval behavior, and model accuracy.",
-  "A safe rehearsal for llm-kb agent selection, synthesis, and onboarding operations.",
+  "A safe rehearsal for specialist-agent selection, synthesis, and onboarding operations.",
   "A cleaner launch path because the public test stays off the customer-facing dashboard.",
 ];
 

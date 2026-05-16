@@ -5,12 +5,12 @@ const scores = [
   {
     value: "KB",
     label: "Knowledge ops",
-    body: "llm-kb supports sync, compile, search, ask, synthesize, curate, publish, and status workflows for reusable project memory.",
+    body: "Knowledge operations organize source material, project memory, and reusable delivery artifacts for each company rollout.",
   },
   {
-    value: "AG",
-    label: "Agent routing",
-    body: "llm-kb can recommend relevant agents and generate task-ready activation prompts for role-specific execution.",
+    value: "DS",
+    label: "Dataset gates",
+    body: "Fine-tuning rows are filtered through schema, label, privacy, leakage, duplicate, split, and gold-reason checks before they are trusted.",
   },
   {
     value: "OP",
@@ -47,9 +47,9 @@ export default function ScoreSection() {
           Operational readiness, not just model tuning.
         </h2>
         <p className="section-copy reveal">
-          llm-kb is part of the platform capability set: knowledge operations,
-          agent routing, publish-safe outputs, and the existing evaluation
-          harness for evidence-based improvement.
+          OnboardAI combines knowledge operations, agent routing, dataset
+          quality gates, publish-safe outputs, and evaluation workflows for
+          evidence-based improvement.
         </p>
 
         <div className="score-layout">
