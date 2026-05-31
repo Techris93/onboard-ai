@@ -126,9 +126,12 @@ def new_id(prefix: str) -> str:
 
 def connect() -> sqlite3.Connection:
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(DB_PATH, factory=ClosingConnection)
+    conn = sqlite3.connect(DB_PATH, timeout=15, factory=ClosingConnection)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
+    conn.execute("PRAGMA busy_timeout = 15000")
+    conn.execute("PRAGMA journal_mode = WAL")
+    conn.execute("PRAGMA synchronous = NORMAL")
     return conn
 
 
@@ -435,10 +438,25 @@ def init_db() -> None:
                 created_at TEXT NOT NULL
             );
 
-            CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs(status, created_at);
-            CREATE INDEX IF NOT EXISTS idx_artifacts_org ON artifacts(organization_id, created_at);
-            CREATE INDEX IF NOT EXISTS idx_dataset_rows_batch ON dataset_rows(batch_id, status);
-            CREATE INDEX IF NOT EXISTS idx_audit_org ON audit_logs(organization_id, created_at);
+            CREATE INDEX IF NOT EXISTS idx_sessions_user_expires ON sessions(user_id, expires_at);
+            CREATE INDEX IF NOT EXISTS idx_memberships_user_status ON memberships(user_id, status, created_at);
+            CREATE INDEX IF NOT EXISTS idx_memberships_org_status ON memberships(organization_id, status, created_at);
+            CREATE INDEX IF NOT EXISTS idx_projects_org_created ON projects(organization_id, created_at);
+            CREATE INDEX IF NOT EXISTS idx_jobs_status_created ON jobs(status, created_at);
+            CREATE INDEX IF NOT EXISTS idx_jobs_org_status_created ON jobs(organization_id, status, created_at);
+            CREATE INDEX IF NOT EXISTS idx_jobs_org_created ON jobs(organization_id, created_at);
+            CREATE INDEX IF NOT EXISTS idx_artifacts_org_created ON artifacts(organization_id, created_at);
+            CREATE INDEX IF NOT EXISTS idx_artifacts_job_created ON artifacts(job_id, created_at);
+            CREATE INDEX IF NOT EXISTS idx_dataset_pipelines_org_created ON dataset_pipelines(organization_id, created_at);
+            CREATE INDEX IF NOT EXISTS idx_dataset_pipelines_project_created ON dataset_pipelines(organization_id, project_id, created_at);
+            CREATE INDEX IF NOT EXISTS idx_dataset_batches_org_created ON dataset_batches(organization_id, created_at);
+            CREATE INDEX IF NOT EXISTS idx_dataset_batches_pipeline_created ON dataset_batches(pipeline_id, created_at);
+            CREATE INDEX IF NOT EXISTS idx_dataset_rows_org_status ON dataset_rows(organization_id, status, created_at);
+            CREATE INDEX IF NOT EXISTS idx_dataset_rows_batch_status_created ON dataset_rows(batch_id, status, created_at);
+            CREATE INDEX IF NOT EXISTS idx_quality_gate_results_row ON quality_gate_results(row_id, gate);
+            CREATE INDEX IF NOT EXISTS idx_usage_events_org_type_created ON usage_events(organization_id, event_type, created_at);
+            CREATE INDEX IF NOT EXISTS idx_audit_logs_org_created ON audit_logs(organization_id, created_at);
+            CREATE INDEX IF NOT EXISTS idx_api_keys_org_created ON api_keys(organization_id, created_at);
             """
         )
 
@@ -848,22 +866,48 @@ def get_dashboard(token: str) -> Dict[str, Any]:
         )
         jobs = _fetch_all(
             conn,
-            "SELECT * FROM jobs WHERE organization_id = ? ORDER BY created_at DESC LIMIT 12",
+            """
+            SELECT id, organization_id, project_id, type, status, attempts, max_attempts,
+                   result_json, error, created_by, created_at, updated_at, started_at, completed_at
+            FROM jobs
+            WHERE organization_id = ?
+            ORDER BY created_at DESC
+            LIMIT 12
+            """,
             (organization_id,),
         )
         artifacts = _fetch_all(
             conn,
-            "SELECT * FROM artifacts WHERE organization_id = ? ORDER BY created_at DESC LIMIT 12",
+            """
+            SELECT id, organization_id, project_id, job_id, label, kind, preview, storage_uri, created_at
+            FROM artifacts
+            WHERE organization_id = ?
+            ORDER BY created_at DESC
+            LIMIT 12
+            """,
             (organization_id,),
         )
         pipelines = _fetch_all(
             conn,
-            "SELECT * FROM dataset_pipelines WHERE organization_id = ? ORDER BY created_at DESC LIMIT 8",
+            """
+            SELECT id, organization_id, project_id, name, status, spec_json, created_at, updated_at
+            FROM dataset_pipelines
+            WHERE organization_id = ?
+            ORDER BY created_at DESC
+            LIMIT 8
+            """,
             (organization_id,),
         )
         batches = _fetch_all(
             conn,
-            "SELECT * FROM dataset_batches WHERE organization_id = ? ORDER BY created_at DESC LIMIT 8",
+            """
+            SELECT id, pipeline_id, organization_id, project_id, status, provider, requested_rows,
+                   accepted_rows, rejected_rows, pass_rate, report_json, created_at, updated_at
+            FROM dataset_batches
+            WHERE organization_id = ?
+            ORDER BY created_at DESC
+            LIMIT 8
+            """,
             (organization_id,),
         )
         reviews = _fetch_one(
@@ -1459,11 +1503,29 @@ def run_next_job(limit: int = 1, organization_id: str | None = None) -> Dict[str
 def get_job(token: str, job_id: str) -> Dict[str, Any]:
     actor = require_actor(token)
     with connect() as conn:
-        job = _fetch_one(conn, "SELECT * FROM jobs WHERE id = ?", (job_id,))
+        job = _fetch_one(
+            conn,
+            """
+            SELECT id, organization_id, project_id, type, status, attempts, max_attempts,
+                   result_json, error, created_by, created_at, updated_at, started_at, completed_at
+            FROM jobs
+            WHERE id = ?
+            """,
+            (job_id,),
+        )
         if not job:
             raise SaasError(404, "Job was not found.")
         _membership(conn, actor, job["organization_id"])
-        artifacts = _fetch_all(conn, "SELECT * FROM artifacts WHERE job_id = ? ORDER BY created_at ASC", (job_id,))
+        artifacts = _fetch_all(
+            conn,
+            """
+            SELECT id, organization_id, project_id, job_id, label, kind, preview, storage_uri, created_at
+            FROM artifacts
+            WHERE job_id = ?
+            ORDER BY created_at ASC
+            """,
+            (job_id,),
+        )
         return {"job": _job_public(job), "artifacts": [_artifact_public(row) for row in artifacts]}
 
 
@@ -1483,13 +1545,18 @@ def get_artifact(token: str, artifact_id: str) -> Dict[str, Any]:
 def export_dataset_batch(token: str, batch_id: str) -> Dict[str, Any]:
     actor = require_actor(token)
     with connect() as conn:
-        batch = _fetch_one(conn, "SELECT * FROM dataset_batches WHERE id = ?", (batch_id,))
+        batch = _fetch_one(conn, "SELECT id, organization_id FROM dataset_batches WHERE id = ?", (batch_id,))
         if not batch:
             raise SaasError(404, "Dataset batch was not found.")
         _membership(conn, actor, batch["organization_id"])
         rows = _fetch_all(
             conn,
-            "SELECT * FROM dataset_rows WHERE batch_id = ? AND status = 'accepted' ORDER BY created_at ASC",
+            """
+            SELECT prompt_json, label, expected_behavior, gold_reasoning, split, source_trace
+            FROM dataset_rows
+            WHERE batch_id = ? AND status = 'accepted'
+            ORDER BY created_at ASC
+            """,
             (batch_id,),
         )
         export_rows = [
